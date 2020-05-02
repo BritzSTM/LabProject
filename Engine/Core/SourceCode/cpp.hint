@@ -1,0 +1,89 @@
+//CoreHelper.h
+#define SAFE_DELETE(_TARGET_PTR_) if(_TARGET_PTR_ != nullptr) {delete _TARGET_PTR_;}
+
+#define __DISALLOW_CREATE_INSTANCE_RAW(CLASS_NAME)\
+CLASS_NAME() = default;\
+CLASS_NAME(const CLASS_NAME&) = default;\
+CLASS_NAME& operator=(const CLASS_NAME&) = default
+
+#define DISALLOW_CREATE_INSTANCE(CLASS_NAME)\
+protected:\
+__DISALLOW_CREATE_INSTANCE_RAW(CLASS_NAME)
+
+#define DISALLOW_CREATE_INSTANCE_PERMANENTLY(CLASS_NAME)\
+private:\
+__DISALLOW_CREATE_INSTANCE_RAW(CLASS_NAME)
+
+#define DISALLOW_COPY_COTR(CLASS_NAME)\
+private:\
+CLASS_NAME(const CLASS_NAME&) = delete
+
+#define DISALLOW_COPY_COTR_AND_ASSIGN(CLASS_NAME)\
+DISALLOW_COPY_COTR(CLASS_NAME);\
+CLASS_NAME& operator=(const CLASS_NAME&) = delete
+
+#define DISABLE_HEADER_FILE static_assert(false, __FILE__##" file is Disabled")
+
+//EnumExtension.h
+#define E_NAME(_NAME_) ((_NAME_))
+#define E_NAME_V(_NAME_, _VALUE_) ((_NAME_)(=_VALUE_))
+#define ENUM_SIZE_DEFAULT
+#define ENUM_SIZE_SET(_TYPE_) :##_TYPE_
+
+#define __ENUM_STRINGIZE(s, data, elem) BOOST_PP_STRINGIZE(elem)
+
+#define __ENUM_NAME_GET(s, data, elem) (BOOST_PP_SEQ_ELEM(0, elem))
+#define __ENUM_FULL_NAME_GET(s, data, elem) (BOOST_PP_CAT(data, BOOST_PP_SEQ_ELEM(0, elem)))
+#define __ENUM_ELEMENT_GET(s, data, elem) (BOOST_PP_SEQ_CAT(elem))
+
+#define __ENUM_NAME_LIST(_SEQ_) BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_FOR_EACH(__ENUM_NAME_GET, 0, _SEQ_))
+#define __ENUM_ElEMENT_LIST(_SEQ_) BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_FOR_EACH(__ENUM_ELEMENT_GET, 0, _SEQ_))
+#define __ENUM_FULL_ELEMENT_LIST(_ENUM_NAME_, _SEQ_) BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_FOR_EACH(__ENUM_FULL_NAME_GET, _ENUM_NAME_##::, _SEQ_))
+#define __ENUM_NAME_LITERAL_LIST(_SEQ_) BOOST_PP_SEQ_ENUM(BOOST_PP_SEQ_TRANSFORM(__ENUM_STRINGIZE, 0, BOOST_PP_SEQ_FOR_EACH(__ENUM_NAME_GET, 0, _SEQ_)))
+
+
+#define __EXT_ENUM_EXCEPTION_MESSAGE_FORMAT " " __FILE__ "(" STRINGIZE(__LINE__) ")"
+#define __EXT_ENUM_EXCEPTION(_ENUM_NAME_, _TEXT_MESSAGE_) \
+throw std::runtime_error(BOOST_PP_CAT(BOOST_PP_CAT(BOOST_PP_STRINGIZE(_ENUM_NAME_), _TEXT_MESSAGE_), __EXT_ENUM_EXCEPTION_MESSAGE_FORMAT))
+
+
+#define DEFINE_EXT_ENUM(_ENUM_TYPE_, _ENUM_NAME_, _ENUM_SIZE_, _SEQ_)
+
+//Exception.h
+#if defined(NOT_USE_EXCEPTION_BASE_CHECKER)
+#   define __EXCEPTION_BASE_CHECKER(_EXCEPTION_TYPE_)
+#else
+#   define __EXCEPTION_BASE_CHECKER(_EXCEPTION_TYPE_)\
+      static_assert(std::is_base_of<Core::Exception,##_EXCEPTION_TYPE_>::value, "Exception object is not based on Core::Exception")
+#endif
+
+#define NO_DEFINE_DETAILS
+
+#define DEFINE_EXCEPTION_TYPE(_PARENT_NAMESPACE_, _PARENT_TYPE_, _EXCEPTION_NAME_, _DETAILS_)\
+class _EXCEPTION_NAME_                                                                                                       \
+	: public _PARENT_NAMESPACE_::_PARENT_TYPE_                                                                               \
+{                                                                                                                            \
+__EXCEPTION_BASE_CHECKER(_EXCEPTION_TYPE_);                                                                                  \
+public:                                                                                                                      \
+    virtual ~_EXCEPTION_NAME_(){};                                                                                           \
+                                                                                                                             \
+    _EXCEPTION_NAME_(const char* const pszMessage, const EExceptionLevel level, const intptr subDataAddress) noexcept        \
+        : _PARENT_TYPE_(pszMessage, Core::EExceptionLevel::Enum::Normal, PtrTypeTraits<intptr>::errorAddress) {}             \
+	_EXCEPTION_NAME_() noexcept                                                                                              \
+    	: _PARENT_TYPE_(#_EXCEPTION_NAME_, Core::EExceptionLevel::Enum::Normal, PtrTypeTraits<intptr>::errorAddress) {}      \
+    _EXCEPTION_NAME_(const char* const pszMessage) noexcept                                                                  \
+    	: _PARENT_TYPE_(pszMessage, Core::EExceptionLevel::Enum::Normal, PtrTypeTraits<intptr>::errorAddress) {}             \
+                                                                                                                             \
+	_DETAILS_                                                                                                                \
+}
+
+#define _EXCEPTION_MESSAGE_FORMAT " " __FILE__ "(" STRINGIZE(__LINE__) ")"
+#define EF_MSG(_TEXT_MESSAGE_) _TEXT_MESSAGE_ _EXCEPTION_MESSAGE_FORMAT
+
+#define THROWER(_EXCEPTION_TYPE_, _TEXT_MESSAGE_)\
+__EXCEPTION_BASE_CHECKER(_EXCEPTION_TYPE_);\
+throw _EXCEPTION_TYPE_(_TEXT_MESSAGE_, Core::EExceptionLevel::Enum::Normal, Core::BaseTypes::PtrTypeTraits<intptr>::errorAddress)
+
+#define THROWER_DETAIL(_EXCEPTION_TYPE_, _EXCEPTION_LEVEL_, _TEXT_MESSAGE_, _SUB_OBJECT_)\
+__EXCEPTION_BASE_CHECKER(_EXCEPTION_TYPE_);\
+throw _EXCEPTION_TYPE_(_TEXT_MESSAGE_, _EXCEPTION_LEVEL_)
