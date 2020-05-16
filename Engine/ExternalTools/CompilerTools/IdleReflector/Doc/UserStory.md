@@ -9,5 +9,5 @@
     6. IdleReflector는 제공된 포맷해석기를 이용해 리플렉션 작업을 진행한다
         ex) Type=enum name value or [Type]=underlying_value and 대소문자 구분무시 등
             다양한 포맷 제공가능
-
++ 비기능
     1. API의 ABI 호환 유지 가능
