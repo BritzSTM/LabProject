@@ -1,6 +1,6 @@
 ﻿## User Story
 ### Enum type
-- 기능
+기능
 
     1. 사용자가 정의된 열거형을 지정해서 리플렉션 가능 타입으로 지정한다
     2. 사용자가 열거형 변수를 포맷을 지정하여 직렬화한다
@@ -10,6 +10,6 @@
     6. IdleReflector는 제공된 포맷해석기를 이용해 리플렉션 작업을 진행한다
     ex) Type=enum name value or [Type]=underlying_value and 대소문자 구분무시 등, 다양한 포맷 제공
 
-- 비기능
+비기능
 
     1. API의 ABI 호환 유지 가능
