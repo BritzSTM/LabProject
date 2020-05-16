@@ -3,14 +3,14 @@
 cmake_minimum_required(VERSION 3.7)
 
 
-#name section
+# name section
 set(LAB_INSTALLED_DIR_NAME Installed CACHE STRING "")
 set(LAB_INSTALLED_BINARY_DIR_NAME bin CACHE STRING "")
 set(LAB_INSTALLED_LIB_DIR_NAME lib CACHE STRING "")
 set(LAB_INSTALLED_PRE_DIR_NAME Pre CACHE STRING "")
 
 
-#path section
+# path section
 set(LAB_INSTALLED_PATH 
     "${CMAKE_CURRENT_LIST_DIR}/../${LAB_INSTALLED_DIR_NAME}" 
     CACHE PATH ""
