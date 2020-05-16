@@ -3,4 +3,7 @@
 > + 전자동 Reflection이 아닌 지정된 타입에만 적용되는 도구
 
 ## Workflow
-![workflowImg](doc/workflow.png)
+![WorkflowImg](Doc/workflow.png)
+
+## API Design Doc
+![UserStoryDoc](Doc/UserStory.md)
