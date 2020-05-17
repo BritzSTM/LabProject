@@ -18,7 +18,7 @@
 #
 cmake_minimum_required(VERSION 3.7)
 
-set(VCPKG_MANAGER_VERSION 0.2)
+set(VCPKG_MANAGER_VERSION 0.2.1)
 message(STATUS "VcpkgManager ${VCPKG_MANAGER_VERSION}")
 
 
@@ -52,6 +52,7 @@ set(LAB_VCPKG_REPO_URL https://github.com/Microsoft/vcpkg.git)
 set(LAB_VCPKG_GIT_CLONE_CMD "git")
 set(LAB_VCPKG_GIT_CLONE_ARG clone;--depth;1;${LAB_VCPKG_REPO_URL};./;)
 set(LAB_VCPKG_GIT_CLONE_CMD_SUCCEED 0)
+set(LAB_VCPKG_BOOTSTRAP_CMD_SUCCEED 0)
 
 
 #
@@ -78,7 +79,7 @@ macro(MatchVcpkgRepo)
     endif()
 endmacro()
 
-#전달받은 경로에 vcpkg를 다운받습니다
+# 전달받은 경로에 vcpkg를 다운받습니다. 실패시 FATAL_ERROR
 function(downloadVcpkg DOWNLOAD_PATH_ARG)
     execute_process(
       COMMAND ${LAB_VCPKG_GIT_CLONE_CMD} ${LAB_VCPKG_GIT_CLONE_ARG}
@@ -89,7 +90,7 @@ function(downloadVcpkg DOWNLOAD_PATH_ARG)
 
     # check succeed git clone
     if(NOT ${GIT_RESULT} EQUAL ${LAB_VCPKG_GIT_CLONE_CMD_SUCCEED})
-        message(FATAL_ERROR "Faild vcpkg startup process. Git[${GIT_RESULT}]: ${GIT_OUTPUT}")
+        message(FATAL_ERROR "Failed vcpkg startup process. Git[${GIT_RESULT}]: ${GIT_OUTPUT}")
 
     else()
         message(STATUS "Git[${GIT_RESULT}]: ${GIT_OUTPUT}")
@@ -97,7 +98,7 @@ function(downloadVcpkg DOWNLOAD_PATH_ARG)
     endif()
 endfunction()
 
-#전달받은 경로에 있는 vcpkg를 설치합니다
+# 전달받은 경로에 있는 vcpkg를 설치합니다. 실패시 FATAL_ERROR
 function(setupVcpkg DOWNLOADED_PATH_ARG)
     if(WIN32)
         set(LAB_VCPKG_BOOTSTRAP_FILE_PATH bootstrap-vcpkg.bat)
@@ -107,7 +108,7 @@ function(setupVcpkg DOWNLOADED_PATH_ARG)
 
     endif()
 
-    message(STATUS "VcpkgBootstrap...... wait few min")
+    message(STATUS "VcpkgBootstrap...... wait for few minutes")
     execute_process(
       COMMAND ${LAB_VCPKG_BOOTSTRAP_FILE_PATH}
       WORKING_DIRECTORY ${DOWNLOADED_PATH_ARG}
@@ -115,7 +116,14 @@ function(setupVcpkg DOWNLOADED_PATH_ARG)
       OUTPUT_VARIABLE BOOTSTRAP_OUTPUT
       )
 
-    message(STATUS "VcpkgBootstrap[${BOOTSTRAP_RESULT}]:${BOOTSTRAP_OUTPUT}")
+    # check succeed
+    if(NOT ${BOOTSTRAP_RESULT} EQUAL ${LAB_VCPKG_BOOTSTRAP_CMD_SUCCEED})
+        message(FATAL_ERROR "Failed VcpkgBootstrap[${BOOTSTRAP_RESULT}]:${BOOTSTRAP_OUTPUT}")
+
+    else()
+        message(STATUS "VcpkgBootstrap[${BOOTSTRAP_RESULT}]:${BOOTSTRAP_OUTPUT}")
+
+    endif()
 endfunction()
 
 #
