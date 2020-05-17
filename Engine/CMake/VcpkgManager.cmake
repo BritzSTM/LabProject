@@ -18,7 +18,7 @@
 #
 cmake_minimum_required(VERSION 3.7)
 
-set(VCPKG_MANAGER_VERSION 0.2.1)
+set(VCPKG_MANAGER_VERSION 0.3)
 message(STATUS "VcpkgManager ${VCPKG_MANAGER_VERSION}")
 
 
@@ -44,8 +44,15 @@ if(NOT DEFINED LAB_VCPKG_ROOT_PATH)
 endif()
 
 # prviate variables
-set(LAB_VCPKG_ROOT_SIMBOL_FILE_NAME .vcpkg-root)
-set(LAB_VCPKG_EXE_FILE_NAME vcpkg)
+set(LAB_VCPKG_ROOT_SIMBOL_FILE .vcpkg-root)
+
+if(WIN32)
+    set(LAB_VCPKG_EXE_FILE vcpkg.exe)
+
+else()
+    set(LAB_VCPKG_EXE_FILE vcpkg)
+
+endif()
 
 # git repository clone
 set(LAB_VCPKG_REPO_URL https://github.com/Microsoft/vcpkg.git)
@@ -60,24 +67,26 @@ set(LAB_VCPKG_BOOTSTRAP_CMD_SUCCEED 0)
 #
 macro(printVcpkgVar)
     message(STATUS "LAB_VCPKG_ROOT_PATH=${LAB_VCPKG_ROOT_PATH}")
-    message(STATUS "LAB_VCPKG_ROOT_SIMBOL_FILE_NAME=${LAB_VCPKG_ROOT_SIMBOL_FILE_NAME}")
-    message(STATUS "LAB_VCPKG_EXE_FILE_NAME=${LAB_VCPKG_EXE_FILE_NAME}")
-    message(STATUS "LAB_VCPKG_EXE_FILE_EXT=${LAB_VCPKG_EXE_FILE_EXT}")
-
+    message(STATUS "LAB_VCPKG_ROOT_SIMBOL_FILE=${LAB_VCPKG_ROOT_SIMBOL_FILE}")
+    message(STATUS "LAB_VCPKG_EXE_FILE=${LAB_VCPKG_EXE_FILE}")
 endmacro()
 
 macro(printVcpkgRepoVar)
     message(STATUS "LAB_VCPKG_REPO_URL=${LAB_VCPKG_REPO_URL}")
     message(STATUS "Vcpkg clone cmd=${LAB_VCPKG_GIT_CLONE_CMD} ${LAB_VCPKG_GIT_CLONE_ARG}")
-
 endmacro()
 
-macro(MatchVcpkgRepo)
-    if(EXISTS "${LAB_VCPKG_DOWNLOAD_PATH}/${LAB_VCPKG_GIT_REPO_SIMBOL}")
-        message(STATUS "Found Vcpkg Repository")
-        return()
+# 전달받은 경로에 유효한 vcpkg가 존재하는지 확인합니다. 
+# ResCode 0 = 유효한 vcpkg,  
+function(has VCPKG_ROOT_PATH_ARG RES_CODE_ARG)
+    if(EXISTS ${LAB_VCPKG_ROOT_PATH})
+        if(EXISTS "${LAB_VCPKG_ROOT_PATH}/${LAB_VCPKG_ROOT_SIMBOL_FILE}")
+            if(EXISTS "${LAB_VCPKG_ROOT_PATH}/${LAB_VCPKG_EXE_FILE}")
+                set(${RES_CODE_ARG} 0 PARENT_SCOPE)
+            endif()
+        endif()
     endif()
-endmacro()
+endfunction()
 
 # 전달받은 경로에 vcpkg를 다운받습니다. 실패시 FATAL_ERROR
 function(downloadVcpkg DOWNLOAD_PATH_ARG)
@@ -125,6 +134,7 @@ function(setupVcpkg DOWNLOADED_PATH_ARG)
 
     endif()
 endfunction()
+
 
 #
 # work process section
