@@ -23,4 +23,5 @@ Lib/*.ilk
 
 **/.vs
 **/out
+**/.vscode
 
