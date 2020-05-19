@@ -200,6 +200,23 @@ function(VcpkgManager_handleVcpkgRootFolder_ TARGET_VCPKG_ROOT_PATH_)
     endif()
 endfunction()
 
+# ! 반드시 전달 값을 모조리 받을 것이 조건. 반드시 function 내부안에서 호출되어야 함.
+macro(VcpkgManager_integratePure_)
+    # 첫 인자만 파일입력 값으로 평가함
+    if(${ARGC})
+        get_filename_component(CONV_ABS_PATH_ ${ARGV0} ABSOLUTE)
+        
+        if(EXISTS ${CONV_ABS_PATH_})
+            set(CMAKE_TOOLCHAIN_FILE ${CONV_ABS_PATH_} PARENT_SCOPE)
+            unset(CONV_ABS_PATH_)
+        else()
+            message(FATAL_ERROR "No exists vcpkg tool chain file. ${CONV_ABS_PATH_}")
+        endif()
+    else()
+        set(CMAKE_TOOLCHAIN_FILE "${LAB_VCPKG_ROOT_PATH}/${LAB_VCPKG_TOOL_CHAIN_FILE_}" PARENT_SCOPE)
+    endif()
+endmacro()
+
 #
 # public function section
 #
@@ -227,14 +244,30 @@ function(VcpkgManager_ready)
     endif()
 
     message(STATUS "Ready to Vcpkg in ${LAB_VCPKG_ROOT_PATH}")
-
     VcpkgManager_handleVcpkgRootFolder_(${LAB_VCPKG_ROOT_PATH})
+
     set(LAB_VCPKG_MANAGER_READY_ TRUE PARENT_SCOPE)
 endfunction()
 
+# 전달인자가 없으면 LAB_VCPKG_TOOL_CHAIN_FILE로 통합을 진행합니다
+# 외부에서 주입되는 VCPKG_CHAINLOAD_TOOLCHAIN_FILE 또한 상속 됩니다
+function(VcpkgManager_integrateInheritance)
+    VcpkgManager_ensureReadyState_()
+    
+    VcpkgManager_integratePure_(${ARGV})
+
+    set(LAB_VCPKG_MANAGER_INTEGRATION_ TRUE PARENT_SCOPE)
+endfunction()
+
+# 전달인자가 없으면 LAB_VCPKG_TOOL_CHAIN_FILE로 통합을 진행합니다
+# 외부에서 주입되는 VCPKG_CHAINLOAD_TOOLCHAIN_FILE 또한 초기화 됩니다
 function(VcpkgManager_integrateCleanly)
     VcpkgManager_ensureReadyState_()
 
+    VcpkgManager_integratePure_(${ARGV})
+
+    set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE PARENT_SCOPE)
+    set(LAB_VCPKG_MANAGER_INTEGRATION_ TRUE PARENT_SCOPE)
 endfunction()
 
 function(VcpkgManager_requireLib)
