@@ -31,3 +31,7 @@
 ## Extra Part 
 > 프로젝트에 도움이 되는 외적 사항
 + [Extras](Extras/README.md)
+
+## 알려진 이슈
+1. CMake, Visual studio 사용중 권한문제
+    * 모든 권한이 부여했음에도 문제가 발생한다면 바이러스 백신 보호를 의심할 것
