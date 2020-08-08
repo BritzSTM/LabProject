@@ -1,0 +1,7 @@
+#ignore all
+*
+
+#white list
+!.gitignore
+!/Pre/
+!/Pre/**
