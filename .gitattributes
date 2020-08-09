@@ -1,14 +1,11 @@
-# Auto detect text files and perform LF normalization
-*        text=auto
+# Text files and perform LF normalization
+*        text eol=lf
 
-*.editorconfig text
-*.md     text
+# Specialization
 *.cs     text diff=csharp
 
-# Always checkout with LF
-*.sh     text eol=lf
-
-# Always checkout with CRLF
+# Always checkout with CRLF (Windows)
 *.bat    text eol=crlf
+*.ps     text eol=crlf
 *.csproj text eol=crlf
 *.sln    text eol=crlf
