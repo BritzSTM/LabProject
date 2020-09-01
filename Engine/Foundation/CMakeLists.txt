@@ -35,11 +35,13 @@ add_subdirectory(${FD_SOURCE_DIR})
 set(FD_INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include/${PROJECT_SHORT_NAME}" CACHE PATH "Header files install target")
 set(FD_LIB_INSTALL_DIR     "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Lib file install target")
 set(FD_SHARE_INSTALL_DIR   "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_SHORT_NAME}" CACHE PATH "Share files install target")
+set(FD_EXPORT_NAME ${PROJECT_NAME}Config)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_${CMAKE_BUILD_TYPE}")
 set_target_properties(${PROJECT_NAME} PROPERTIES RELEASE_POSTFIX "_${CMAKE_BUILD_TYPE}")
 
 install(TARGETS ${PROJECT_NAME}
+    EXPORT ${FD_EXPORT_NAME}
     LIBRARY DESTINATION "${FD_LIB_INSTALL_DIR}")
 
 set(FD_INSTALL_EXCLUDE_REGEX "out|VcpkgPort|\.vs")
@@ -57,6 +59,9 @@ set(FD_VERSION_FILE_PATH ${CMAKE_BINARY_DIR}/cmake/${PROJECT_NAME}-config-versio
 write_basic_package_version_file(${FD_VERSION_FILE_PATH}
     VERSION             ${PROJECT_VERSION}
     COMPATIBILITY       SameMajorVersion)
-
 install(FILES           ${FD_VERSION_FILE_PATH}
         DESTINATION     ${FD_SHARE_INSTALL_DIR})
+
+install(EXPORT ${FD_EXPORT_NAME}
+    NAMESPACE   fd::
+    DESTINATION ${FD_SHARE_INSTALL_DIR})
