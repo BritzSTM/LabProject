@@ -1,0 +1,8 @@
+#pragma once
+
+
+#define TARGET_OS_NONE_TYPE    0x00
+#define TARGET_OS_WIN32_TYPE   0x01
+#define TARGET_OS_WIN64_TYPE   0x02
+#define TARGET_OS_LINUX32_TYPE 0x04
+#define TARGET_OS_LINUX64_TYPE 0x08
