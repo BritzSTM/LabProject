@@ -65,7 +65,7 @@ set(FD_EXPORT_NAME ${PROJECT_NAME}Config)
 # !설치경로 변수 사용에 주의 할 것
 target_link_directories(${PROJECT_NAME}
     PUBLIC
-        $<INSTALL_INTERFACE:${_FD_INCLUDE_INSTALL_DIR}>)
+        $<INSTALL_INTERFACE:${FD_INCLUDE_INSTALL_DIR}>)
 
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${FD_EXPORT_NAME}
