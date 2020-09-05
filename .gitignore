@@ -24,4 +24,4 @@ Lib/*.ilk
 **/.vs
 **/out
 **/.vscode
-
+**/Debug
