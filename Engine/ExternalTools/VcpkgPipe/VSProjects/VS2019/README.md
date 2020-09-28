@@ -8,6 +8,7 @@
 
 ## 배포구성
 > vpp 실행파일이 있는 root path를 기준으로 상대적 위치로 배치
+> 실제 프로젝트 Root path $(RealProjectRootPath) 속성 매크로 추가
 1. 실행파일 /vpp.exe
 2. 설정파일 /configs
 3. GUI 구성파일 /gui
