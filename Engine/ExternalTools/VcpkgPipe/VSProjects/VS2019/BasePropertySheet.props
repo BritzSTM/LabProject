@@ -2,13 +2,21 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <RealProjectRootPath>..\..\</RealProjectRootPath>
+    <RealProjectRootPath>..\..</RealProjectRootPath>
+    <VppGuiDirPath>$(RealProjectRootPath)\gui</VppGuiDirPath>
+    <VppConfigsDirPath>$(RealProjectRootPath)\configs</VppConfigsDirPath>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
   <ItemGroup>
     <BuildMacro Include="RealProjectRootPath">
       <Value>$(RealProjectRootPath)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VppGuiDirPath">
+      <Value>$(VppGuiDirPath)</Value>
+    </BuildMacro>
+    <BuildMacro Include="VppConfigsDirPath">
+      <Value>$(VppConfigsDirPath)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>
