@@ -128,10 +128,14 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>dir $(RealProjectRootPath)
-dir $(VppConfigsDirPath)
-dir $(VppGuiDirPath)</Command>
+      <Command>XCOPY "$(VppConfigsDirPath)" "$(OutputPath)$(VppConfigsDirName)" /E /I /y /d /f
+XCOPY "$(VppGuiDirPath)" "$(OutputPath)$(VppGuiDirName)" /E /I /y /d /f</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>ECHO "pre-build event"
+ECHO "Cleanup resource files"
+del /f /s /q "$(OutputPath)$(VppConfigsDirName)" "$(OutputPath)$(VppGuiDirName)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

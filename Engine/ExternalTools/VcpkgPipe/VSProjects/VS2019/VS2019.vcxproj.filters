@@ -8,9 +8,6 @@
     <Filter Include="src">
       <UniqueIdentifier>{aa3c40d1-7e51-4228-9b95-efff9c0dbf64}</UniqueIdentifier>
     </Filter>
-    <Filter Include="gui">
-      <UniqueIdentifier>{45367a19-9d53-49fe-9ead-fa15c91d1a2a}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\main.cpp">
