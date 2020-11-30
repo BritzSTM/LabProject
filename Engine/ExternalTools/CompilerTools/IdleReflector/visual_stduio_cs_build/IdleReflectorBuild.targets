@@ -1,0 +1,86 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 1. https://docs.microsoft.com/ko-kr/cpp/build/reference/vcxproj-file-structure?view=msvc-160 참고
+       2. XmlPeek를 이용한 정규화된 속성 획득방법이 존재함. 
+          하지만 현재는 그렇게 많은 옵션을 사용하지 않으므로 미사용
+       3. 하나의 원본 소스파일은 확실한 출력. 하지만 원본 소스의 파생물은 결과가 나와야 함
+    -->
+  
+  <!-- 기존 C/C++속성 확장 정의 스키마 로드. Cl 확장이므로 Context는 미지정 -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)IdleReflectorBuild.xml"/>
+  </ItemGroup>
+  
+  <!-- Generate build 정의 -->
+  <Target Name="IdleReflectorNormalTarget"
+    Condition="'@(ClCompile)' != ''"
+    Outputs="@(AllOutputs->'%(FullPath)')"
+    DependsOnTargets="_SelectedFiles"
+    BeforeTargets="ClCompile">
+    <!--Outputs ="%(ClCompile.Identity)"-->
+    
+    <PropertyGroup>
+      <!--테스트용 stub 생성기 경로-->
+      <StubPath>"D:\Dev\Practice\IdleReflectorTest\Debug\IdleReflectorStub.exe"</StubPath>
+      
+      <!--<GenDirectoryName Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' == '.c'">CompileAsC</GenDirectoryName>
+      <GenDirectoryName Condition="'%(ClCompile.CompileAs)' == 'Default' and '%(ClCompile.Extension)' != '.c'">CompileAsCpp</GenDirectoryName>-->
+      <GenFilePath/>
+      <GenSourceFilePath/>
+      <GenMacro/>
+  </PropertyGroup>
+
+        
+    <!--선택 파일에 대한 강제 삭재-->
+    <ItemGroup Condition="'@(SelectedFiles)' != ''">
+      <IncFilesToDelete Include="%(ClCompile.Filename)_pp.h"/>
+    </ItemGroup>
+    <Delete Condition="'@(IncFilesToDelete)' != ''" Files="%(IncFilesToDelete.FullPath)" />
+
+    <!--파일 리스트 작성-->
+    <ItemGroup>
+      <PPIncFiles
+        Condition="'@(ClCompile)' != '' and '%(ClCompile.ExcludedFromBuild)' != 'true'"
+        Include="%(ClCompile.Filename)_pp.h" />
+    </ItemGroup>
+
+    <!--최신여부 결정-->
+    <PropertyGroup>
+      <SourceFileDate>$([System.DateTime]::Parse('%(ClCompile.ModifiedTime)').Ticks)</SourceFileDate>
+      <PPIncFileDate Condition="!Exists(%(PPIncFiles.Identity))">0</PPIncFileDate>
+      <PPIncFileDate Condition="Exists(%(PPIncFiles.Identity))">$([System.DateTime]::Parse('%(PPIncFiles.ModifiedTime)').Ticks)</PPIncFileDate>
+      <PipeArg>[AllOptions]</PipeArg>
+    </PropertyGroup>
+
+    <!--결과 출력 표시 필요-->
+    <!-- 문제는 실행시 옵션 이름과 Command 위치. %(ClCompile.PreprocessorDefinitions) -->
+    <Exec
+      Condition="'@(PPIncFiles)' != '' and $(SourceFileDate) > $(PPIncFileDate)"
+      Command="ECHO %(ClCompile.GenFileSuffix) %(ClCompile.Option1) %(ClCompile.Option2)... %(ClCompile.Identity)"/>
+    <!--<Exec ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
+    </Exec>-->
+    
+    <!--최종 결과파일 목록 작성-->
+    <ItemGroup>
+      <IdleRefectorResFiles Include="%(ClCompile.Identity)"/>
+    </ItemGroup>
+    
+    <Message Text="[ '%(IdleRefectorResFiles.Identity)' ]" Importance="high"/>
+    
+    <!--<CreateItem Include="$(IdleRefectorResFiles)">
+      <Output ItemName="AllOutputs" TaskParameter="Include"/>
+    </CreateItem>-->
+  </Target>
+
+  <!--Cleanup-->
+  <PropertyGroup>
+    <CleanDependsOn>$(CleanDependsOn);PPIncCleanTarget</CleanDependsOn>
+  </PropertyGroup>
+
+  <Target Name="PPIncCleanTarget"  Condition ="'@(ClCompile)' != ''">
+    <ItemGroup>
+      <PPIncFilesToDelete Include="%(ClCompile.Filename)_pp.h" />
+    </ItemGroup>
+    <Delete Files="%(PPIncFilesToDelete.FullPath)" Condition="'@(PPIncFilesToDelete)' != ''"/>
+  </Target>
+</Project>

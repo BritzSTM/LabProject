@@ -1,0 +1,21 @@
+<Rule
+  Name="CL"
+  DisplayName="IdleReflector C / C++"
+  PageTemplate="tool"
+  Description="IdleReflector use generate files"
+  OverrideMode="Extend"
+  xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <!-- Add new properties, data source, categories, etc -->
+  <Rule.Categories>
+    <Category Name="IdleReflector" DisplayName="Reflector"/>
+  </Rule.Categories>
+
+  <StringProperty Name="GenDirectoryName" Category="Reflector"
+                  IncludeInCommandLine ="false"
+                  Description="생성된 코드파일이 저장될 폴더 이름"/>
+  
+  <StringProperty Name="GenFileSuffix" Category="Reflector"
+                IncludeInCommandLine ="false"
+                Description="생성된 코드파일의 접미사"/> 
+</Rule>
