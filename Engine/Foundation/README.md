@@ -1,5 +1,5 @@
 # Foundation
-> + 정적 라이브러리
+> + 64bit 정적 라이브러리
 > + MultiPlatform을 위한 LowLevel 추상화 함수 구현
 
 ## 규칙
