@@ -25,3 +25,5 @@ Lib/*.ilk
 **/out
 **/.vscode
 **/Debug
+**/x64/Debug
+**/x64/Release
