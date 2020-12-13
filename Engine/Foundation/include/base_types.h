@@ -16,7 +16,7 @@
 #pragma once
 
 #include "base_type/base_type_integers.h"
-#include "base_type/base_type_floatings.h
+#include "base_type/base_type_floatings.h"
 
 
 namespace fd
@@ -38,7 +38,7 @@ namespace fd
         using word64 = uint64;
 
         // 자주 사용되는 자연수 최대 크기 
-        using size_t = uint64;
+        using size_t = std::size_t;
     }
 
     // level 0 상승
