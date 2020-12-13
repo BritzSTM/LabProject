@@ -16,6 +16,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         base_types.h
         version.h
+        hash.h
         ${_FD_GEN_FILE_LIST}
         )
 
