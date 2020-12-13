@@ -12,38 +12,25 @@
 */
 #pragma once
 
+#include "../platform/target_arch.h"
+
+
+#if (FD_TARGET_ARCH == FD_ARCH_X64)
+#include "base_type_x64_common.h"
+
+#else
+#    error unknown arch type. not include fixed integer types.
+
+#endif
+
 
 namespace fd
 {
-    namespace BaseTypes
+    namespace base_type
     {
         /*
-            정수형 타입 정규화
+            최종 정수원자 타입 크기 확인.
         */
-        using int8  = __int8;
-        using int16 = __int16;
-        using int32 = __int32;
-        using int64 = __int64;
-
-        using uint8  = unsigned __int8;
-        using uint16 = unsigned __int16;
-        using uint32 = unsigned __int32;
-        using uint64 = unsigned __int64;
-
-        using long32  = __int32;
-        using long64  = __int64;
-        using ulong32 = unsigned __int32;
-        using ulong64 = unsigned __int64;
-            
-
-        /*
-            최종 정수원자 타입 크기 확인
-        */
-        static_assert(sizeof(char)      == 1, "char type size isn't 1byte!");
-        static_assert(sizeof(short)     == 2, "short type size isn't 2byte!");
-        static_assert(sizeof(int)       == 4, "int type size isn't 4byte!");
-        static_assert(sizeof(long long) == 8, "long long type size isn't 8byte!");
-
         static_assert(sizeof(int8)  == 1, "int8 type size isn't 1byte!");
         static_assert(sizeof(int16) == 2, "int16 type size isn't 2byte!");
         static_assert(sizeof(int32) == 4, "int32 type size isn't 4byte!");
@@ -53,10 +40,5 @@ namespace fd
         static_assert(sizeof(uint16) == 2, "uint16 type size isn't 2byte!");
         static_assert(sizeof(uint32) == 4, "uint32 type size isn't 4byte!");
         static_assert(sizeof(uint64) == 8, "uint64 type size isn't 8byte!");
-        
-        static_assert(sizeof(long32)  == 4, "long32 type size isn't 4byte!");
-        static_assert(sizeof(long64)  == 8, "long64 type size isn't 8byte!");
-        static_assert(sizeof(ulong32) == 4, "ulong32 type size isn't 4byte!");
-        static_assert(sizeof(ulong64) == 8, "ulong64 type size isn't 8byte!");
     }
 }

@@ -1,5 +1,5 @@
 /**
-    @file BaseTypes.h
+    @file base_types.h
     @brief 정규화된 정수, 실수 자료형을 제공함과 동시에 CPU 정보처리 단위 자료형을 정의합니다.
     @details
      x86 CPU 정보처리 단위는 byte, word, dword, qword가 있지만 word의 순수한 의미는
@@ -15,20 +15,19 @@
 */
 #pragma once
 
-
-#include "BaseTypes/BaseType_Integers.h"
-#include "BaseTypes/BaseType_Floatings.h"
+#include "base_type/base_type_integers.h"
+#include "base_type/base_type_floatings.h
 
 
 namespace fd
 {
     /**
-        @namespace BaseTypes
+        @namespace base_type
         @brief
         정규화된 기본 자료형을 제공하는 영역. Lib 사용시 BaseTypes namespace를 직접 참조하지 말고
-        BaseTypes.h를 포함하여 namespace fd에서 참조할 것
+        base_types를 포함하여 namespace fd에서 참조할 것
     */
-    namespace BaseTypes
+    namespace base_type
     {
         /*
             CPU 정보처리 정규화 단위 정의
@@ -39,9 +38,9 @@ namespace fd
         using word64 = uint64;
 
         // 자주 사용되는 자연수 최대 크기 
-        using size_t = word32;
+        using size_t = uint64;
     }
 
     // level 0 상승
-    using namespace BaseTypes;
+    using namespace base_type;
 }

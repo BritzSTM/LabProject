@@ -42,7 +42,7 @@ install(DIRECTORY example/
 
 namespace fd
 {
-    namespace BaseTypes
+    namespace base_type
     {
         ///*
         //    기본으로 사용될 실수 원자 타입에 대한 크기 확인
