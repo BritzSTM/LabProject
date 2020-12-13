@@ -2,17 +2,27 @@
 target_precompile_headers(${PROJECT_NAME} PRIVATE "${FD_SOURCE_DIR}/pch.h")
 
 # GenerateFiles
-set(CMAKE_CONFIG_GEN_SUFFIX "cmake_gen")
+set(_FD_GEN_FILE_LIST)
+set(_FD_CMAKE_CONFIG_GEN_SUFFIX "cmake_gen")
 
 configure_file(
-    "${FD_SOURCE_DIR}/Version.cpp.in"
-    "${FD_SOURCE_DIR}/Version_${CMAKE_CONFIG_GEN_SUFFIX}.cpp")
+    "${FD_SOURCE_DIR}/version.cpp.in"
+    "${FD_SOURCE_DIR}/version_${_FD_CMAKE_CONFIG_GEN_SUFFIX}.cpp")
+
+list(APPEND _FD_GEN_FILE_LIST "${FD_SOURCE_DIR}/version_${_FD_CMAKE_CONFIG_GEN_SUFFIX}.cpp")
+
 
 target_sources(${PROJECT_NAME}
     PRIVATE
-        BaseTypes.h
-        Version.h
-        Version_cmake_gen.cpp)
+        base_types.h
+        version.h
+        ${_FD_GEN_FILE_LIST}
+        )
 
-#add_subdirectory(BaseTypes)
-add_subdirectory(Dummy)
+
+add_subdirectory(base_type)
+add_subdirectory(dummy)
+add_subdirectory(platform)
+
+
+# Reflection Module
