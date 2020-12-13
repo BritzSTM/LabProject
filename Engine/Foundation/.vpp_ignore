@@ -1,0 +1,14 @@
+# test ignore form
+
+
+# gen files
+.editorconfig
+*_cmake_gen.cpp
+
+#vs cmake project 
+CMakeSettings.json
+
+# folder
+vcpkg_port
+out
+.vs
