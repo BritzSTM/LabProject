@@ -1,1 +1,8 @@
+# Cmake gen file
+
 *_cmake_gen.*
+
+
+# vs cmake project file
+
+CMakeSettings.json
