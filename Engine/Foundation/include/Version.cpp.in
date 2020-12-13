@@ -2,7 +2,7 @@
     @file Version.cpp.in
     @brief CMake에 사용되는 템플릿
 */
-#include "Version.h"
+#include "version.h"
 
 
 namespace fd
