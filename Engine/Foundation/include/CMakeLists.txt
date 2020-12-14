@@ -18,6 +18,7 @@ target_sources(${PROJECT_NAME}
         version.h
         hash.h
         enum_util.h
+        type_traits_ext.h
         ${_FD_GEN_FILE_LIST}
         )
 

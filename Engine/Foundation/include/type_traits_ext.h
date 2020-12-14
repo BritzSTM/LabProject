@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <tuple>
 
 
 namespace fd
@@ -16,19 +17,6 @@ namespace fd
 
     template<typename _Ty>
     inline constexpr bool is_scoped_enum_v = is_scoped_enum<_Ty>::value;
-
-
-    //function ptr
-
-    template <typename _Ty, bool b = std::is_pointer_v<_Ty>>
-    struct is_function_ptr : std::false_type {};
-
-    template <typename _Ty>
-    struct is_function_ptr<_Ty, true>
-        : std::integral_constant<bool, std::is_function_v<std::remove_pointer_t<_Ty>>> {};
-
-    template<typename _Ty>
-    inline constexpr bool is_function_ptr_v{ is_function_ptr<_Ty>::value };
 
 
     // type
@@ -66,4 +54,50 @@ namespace fd
     /** seed_traits helper */
     template<typename _Ty>
     using seed_traits_t = typename seed_traits<_Ty>::type;
+
+
+    //function ptr
+
+    template <typename _Ty, bool b = std::is_pointer_v<_Ty>>
+    struct is_function_ptr : std::false_type {};
+
+    template <typename _Ty>
+    struct is_function_ptr<_Ty, true>
+        : std::integral_constant<bool, std::is_function_v<std::remove_pointer_t<_Ty>>> {};
+
+    template<typename _Ty>
+    inline constexpr bool is_function_ptr_v{ is_function_ptr<_Ty>::value };
+
+
+    // function
+
+    namespace _internal_type_traits_ext
+    {
+        template<typename _Ty>
+        struct function_args_traits;
+
+        template<typename _Res, typename... _Args>
+        struct function_args_traits<_Res(_Args...)>
+        {
+            static constexpr std::size_t arg_count = sizeof...(_Args);
+
+            template <std::size_t _argIndex>
+            struct argument_traits
+            {
+                static_assert(_argIndex < args_count, "invalid index parameter");
+
+                using type = typename std::tuple_element<_argIndex, std::tuple<_Args...>>::type;
+            };
+        };
+    }
+
+    template<typename _Ty>
+    struct function_traits;
+
+    template<typename _Res, typename... _Args>
+    struct function_traits<_Res(_Args...)>
+        : _internal_type_traits_ext::function_args_traits<_Res(_Args...)>
+    {
+        using return_type = _Res;
+    };
 }
