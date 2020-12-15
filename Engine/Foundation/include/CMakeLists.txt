@@ -14,6 +14,7 @@ list(APPEND _FD_GEN_FILE_LIST "${FD_SOURCE_DIR}/version_${_FD_CMAKE_CONFIG_GEN_S
 
 target_sources(${PROJECT_NAME}
     PRIVATE
+        compiler_directive.h
         base_types.h
         version.h
         hash.h
