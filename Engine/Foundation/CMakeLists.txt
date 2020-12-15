@@ -8,19 +8,19 @@ set(LIB_MINOR_VERSION "0")
 set(LIB_PATCH_VERSION "5")
 set(LIB_VERSION_STRING "${LIB_MAJOR_VERSION}.${LIB_MINOR_VERSION}.${LIB_PATCH_VERSION}")
 
+# Minimal Lang version
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 project(Foundation VERSION ${LIB_VERSION_STRING})
 set(PROJECT_SHORT_NAME fd)
 
 message(STATUS "${PROJECT_NAME}(${PROJECT_SHORT_NAME}) Static LIB(${CMAKE_BUILD_TYPE}) ${LIB_VERSION_STRING}")
 
-# Minimal Lang version
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 # Path
 set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(FD_VCPKG_PORT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VcpkgPort")
+#set(FD_VCPKG_PORT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VcpkgPort")
 
 # Build Delegation
 # 하위 폴더에서 설치까지 다 알아서 처리할 것
@@ -29,7 +29,6 @@ set(FD_VCPKG_PORT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VcpkgPort")
 add_library(${PROJECT_NAME} STATIC "")
 
 add_subdirectory(${FD_SOURCE_DIR})
-#add_subdirectory(${FD_VCPKG_PORT_DIR})
 
 # Install
 # Prefix _가 붙은 변수명이 실제 설치에 사용할 경로
@@ -57,16 +56,12 @@ if(FD_SHARE_INSTALL_PACKING)
     set(_FD_SHARE_INSTALL_DIR ${FD_SHARE_INSTALL_DIR}/${PROJECT_SHORT_NAME})
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "_${CMAKE_BUILD_TYPE}")
+set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 #set_target_properties(${PROJECT_NAME} PROPERTIES RELEASE_POSTFIX "_${CMAKE_BUILD_TYPE}")
 
 set(FD_EXPORT_NAME ${PROJECT_NAME}Config)
 
 # !설치경로 변수 사용에 주의 할 것
-target_link_directories(${PROJECT_NAME}
-    PUBLIC
-        $<INSTALL_INTERFACE:${FD_INCLUDE_INSTALL_DIR}>)
-
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${FD_EXPORT_NAME}
     LIBRARY DESTINATION "${_FD_LIB_INSTALL_DIR}")
