@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../base_type/base_type_x64_common.h" //임시 포함
 #include "../base_types.h"
 #include "../enum_util.h"
 #include "../type_traits_ext.h"
