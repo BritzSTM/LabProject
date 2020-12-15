@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../base_types.h"
-#include "../enum_util.h"
 #include "../type_traits_ext.h"
 
 
