@@ -21,6 +21,7 @@ Lib/*.ilk
 *.zip
 *.bak
 
+**/tmp
 **/.vs
 **/out
 **/.vscode
