@@ -161,11 +161,11 @@ namespace fd::refl
         {
             using namespace std;
             using Ty = _Ty;
-            using seedTy = seed_traits_t<_Ty>;
+            using RemovedCvrefTy = remove_cvref_t<_Ty>;
 
             if constexpr (is_lvalue_reference_v<Ty>)
             {
-                if (is_object_v<seedTy>)
+                if (is_object_v<RemovedCvrefTy>)
                 {
                     return ETypeCLASS::LValObjectRef;
                 }
@@ -174,7 +174,7 @@ namespace fd::refl
             }
             else if (is_rvalue_reference_v<Ty>)
             {
-                if (is_object_v<seedTy>)
+                if (is_object_v<RemovedCvrefTy>)
                 {
                     return ETypeCLASS::RValObjectRef;
                 }
