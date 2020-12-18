@@ -40,12 +40,12 @@ namespace fd
     }
 
     /** 순수한 자료형을 획득한다. */
-    template<typename _Ty>
+    template<typename _Ty, typename _RemovedCvrefTy = remove_cvref_t<_Ty>>
     struct seed_traits
         : std::conditional_t<
-        std::is_pointer_v<_Ty>,
-        seed_traits<std::remove_pointer_t<_Ty>>,
-        std::conditional_t<std::is_array_v<_Ty>, seed_traits<std::decay_t<_Ty>>, _internal_type_traits_ext::identity<remove_cvref_t<_Ty>>>
+        std::is_pointer_v<_RemovedCvrefTy>,
+        seed_traits<std::remove_pointer_t<_RemovedCvrefTy>>,
+        std::conditional_t<std::is_array_v<_RemovedCvrefTy>, seed_traits<std::decay_t<_RemovedCvrefTy>>, _internal_type_traits_ext::identity<remove_cvref_t<_RemovedCvrefTy>>>
         >
     {
 
