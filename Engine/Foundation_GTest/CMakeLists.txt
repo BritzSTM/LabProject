@@ -9,7 +9,9 @@ project(Foundation_Test)
 enable_testing()
 add_executable(main
 	main.cpp
-	version_test.cpp)
+	version_test.cpp
+	reflection_test.cpp
+	type_traits_ext_test.cpp)
 
 find_package(Foundation CONFIG REQUIRED)
 target_link_libraries(main PRIVATE Foundation)
