@@ -79,6 +79,12 @@ namespace fd::refl
         }
 
         template<>
+        constexpr ETypeCLASS FDTypeToETypeCLASS<char>() noexcept
+        {
+            return ETypeCLASS::Char;
+        }
+
+        template<>
         constexpr ETypeCLASS FDTypeToETypeCLASS<signed char>() noexcept
         {
             return ETypeCLASS::SChar;
