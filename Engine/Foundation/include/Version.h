@@ -75,7 +75,7 @@ namespace fd
 
         inline constexpr bool operator>(const SVersionNumber& rhs) noexcept
         {
-            return !operator<(rhs);
+            return operator!=(rhs) && !operator<(rhs);
         }
 
         inline constexpr bool operator<=(const SVersionNumber& rhs) noexcept
