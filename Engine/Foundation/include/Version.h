@@ -1,9 +1,9 @@
 /**
-    @file Version.h
-    @brief Version 정보 조회 기능
+    @file version.h
+    @brief version 정보 조회 기능
     @details
     이 파일의 cpp 구현은 cmake configure_file로 생성함.
-    따라서 구현 템플릿 파일의 이름은 Version.cpp.in 가진다
+    따라서 구현 템플릿 파일의 이름은 version.cpp.in 가진다
 */
 #pragma once
 
@@ -22,29 +22,72 @@ namespace fd
         uint16 major;
         uint16 minor;
         uint16 patch;
-    };
 
-    inline bool operator==(const SVersionNumber& lhs, const SVersionNumber& rhs) noexcept
-    {
-        return (lhs.major == rhs.major) && (lhs.minor == rhs.minor) && (lhs.patch == rhs.patch);
-    }
+        constexpr bool operator==(const SVersionNumber& rhs) noexcept
+        {
+            return (major == rhs.major) && (minor == rhs.minor) && (patch == rhs.patch);
+        }
 
-    bool operator<(const SVersionNumber& lhs, const SVersionNumber& rhs) noexcept;
+        constexpr bool operator<(const SVersionNumber& rhs) noexcept
+        {
+            if (major < rhs.major)
+            {
+                return true;
+            }
+            else if (major > rhs.major)
+            {
+                return false;
+            }
+            else
+            {
+                if (minor < rhs.minor)
+                {
+                    return true;
+                }
+                else if (minor > rhs.minor)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (patch < rhs.patch)
+                    {
+                        return true;
+                    }
+                    else if (patch > rhs.patch)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
 
-    inline bool operator>(const SVersionNumber& lhs, const SVersionNumber& rhs) noexcept
-    {
-        return !(lhs < rhs);
-    }
+            return false;
+        }
 
-    inline bool operator<=(const SVersionNumber& lhs, const SVersionNumber& rhs) noexcept
-    {
-        return (lhs == rhs) || (lhs < rhs);
-    }
+        inline constexpr bool operator!=(const SVersionNumber& rhs) noexcept
+        {
+            return !operator==(rhs);
+        }
 
-    inline bool operator>=(const SVersionNumber& lhs, const SVersionNumber& rhs) noexcept
-    {
-        return (lhs == rhs) || (lhs > rhs);
-    }
+        inline constexpr bool operator>(const SVersionNumber& rhs) noexcept
+        {
+            return !operator<(rhs);
+        }
+
+        inline constexpr bool operator<=(const SVersionNumber& rhs) noexcept
+        {
+            return (operator==(rhs) || operator<(rhs));
+        }
+
+        inline constexpr bool operator>=(const SVersionNumber& rhs) noexcept
+        {
+            return (operator==(rhs) || operator>(rhs));
+        }
+    };       
 
     /**
         @brief 종합적 버전에 대한 정보를 담은 구조체
