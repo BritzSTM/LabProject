@@ -11,12 +11,12 @@ TEST(type_name_test, get_type_name_test)
         fd의 고정길이 타입에 대해서 검증안함. 이유는 크기만 보장하기 때문.
     */
 
-
     using namespace fd::refl;
 
     EXPECT_EQ("fd::refl::ETypeCLASS", GetTypeFullName<ETypeCLASS>());
     EXPECT_EQ("fd::SVersionInfo", GetTypeFullName<fd::SVersionInfo>());
-
+    EXPECT_EQ("fd::SVersionInfo*", GetTypeFullName<fd::SVersionInfo*>());
+    EXPECT_EQ("fd::SVersionInfo[]", GetTypeFullName<fd::SVersionInfo[]>());
 
     {
         using namespace fd;
