@@ -89,12 +89,14 @@ namespace fd
             return m_val;
         }
 
-        constexpr value_type operator=(const enum_group & rhs) noexcept
+        constexpr enum_group& operator=(const enum_group& rhs) noexcept
         {
             m_val = rhs.m_val;
+
+            return *this;
         }
 
-        constexpr bool operator==(const value_type & rhs) noexcept
+        constexpr bool operator==(const enum_group& rhs) noexcept
         {
             return m_val == rhs.m_val;
         }
