@@ -84,14 +84,17 @@ namespace fd
 
         constexpr enum_group(const enum_group&) = default;
 
-        constexpr value_type value_type() noexcept
+        constexpr operator value_type() noexcept
         {
             return m_val;
         }
 
-        constexpr value_type operator=(const enum_group& rhs) noexcept = default;
+        constexpr value_type operator=(const enum_group & rhs) noexcept
+        {
+            m_val = rhs.m_val;
+        }
 
-        constexpr bool operator==(const value_type& rhs) noexcept
+        constexpr bool operator==(const value_type & rhs) noexcept
         {
             return m_val == rhs.m_val;
         }
