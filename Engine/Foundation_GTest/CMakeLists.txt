@@ -11,7 +11,8 @@ add_executable(main
 	main.cpp
 	version_test.cpp
 	reflection_test.cpp
-	type_traits_ext_test.cpp)
+	type_traits_ext_test.cpp
+	enum_util_test.cpp)
 
 find_package(Foundation CONFIG REQUIRED)
 target_link_libraries(main PRIVATE Foundation)
