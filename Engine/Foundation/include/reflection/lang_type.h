@@ -291,4 +291,43 @@ namespace fd::refl
     {
         return _internal_lang_type::GetTypeCLASS<_Ty>();
     }
+
+    /**
+        @brief 타입 한정자를 열거형으로 정의합니다. 포인터의 한정자와 혼동을 주의 할 것.
+        @detail
+        const int* -> None, const int* const -> Const, int* const -> Const
+    */
+    enum class ETypeQualifier : uint8
+    {
+        None,
+        Const,
+        Volatile,
+        ConstVolatile
+    };
+
+    template<typename _Ty>
+    constexpr ETypeQualifier GetTypeQualifier() noexcept
+    {
+        using namespace std;
+        using Ty = _Ty;
+
+        if constexpr (is_const_v<Ty> && is_volatile_v<Ty>)
+        {
+            return ETypeQualifier::ConstVolatile;
+        }
+        else if (is_volatile_v<Ty>)
+        {
+            return ETypeQualifier::Volatile;
+        }
+        else if (is_const_v<Ty>)
+        {
+            return ETypeQualifier::Const;
+        }
+        else
+        {
+            return ETypeQualifier::None;
+        }
+
+        return ETypeQualifier::None;
+    }
 }
