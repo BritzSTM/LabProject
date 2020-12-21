@@ -30,6 +30,22 @@ namespace fd
     template<typename _Ty>
     using remove_cvref_t = typename remove_cvref<_Ty>::type;
 
+
+    // const pointer
+
+    template<typename _Ty>
+    struct is_const_pointer : std::false_type {};
+
+    template<typename _Ty>
+    struct is_const_pointer<const _Ty*> : std::true_type {};
+
+    template<typename _Ty>
+    struct is_const_pointer<const _Ty* const> : std::true_type {};
+
+    template<typename _Ty>
+    inline constexpr bool is_const_pointer_v = is_const_pointer<_Ty>::value;
+
+
     namespace _internal_type_traits_ext
     {
         template<typename _Ty>
