@@ -28,7 +28,11 @@ set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 #   대신 target_sources로 등록할 것
 add_library(${PROJECT_NAME} STATIC "")
 
+find_package(Microsoft.GSL CONFIG REQUIRED)
+target_link_libraries(Foundation PRIVATE Microsoft.GSL::GSL)
+
 add_subdirectory(${FD_SOURCE_DIR})
+
 
 # Install
 # Prefix _가 붙은 변수명이 실제 설치에 사용할 경로

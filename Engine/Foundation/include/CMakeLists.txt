@@ -20,6 +20,7 @@ target_sources(${PROJECT_NAME}
         hash.h
         enum_util.h
         type_traits_ext.h
+        span.h
         ${_FD_GEN_FILE_LIST}
         )
 
