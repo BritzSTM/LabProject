@@ -36,24 +36,21 @@ namespace fd
 
                 return hashValue ^ (hashValue >> 16);
             }
-
-            template<typename _HashTy>
-            using SelectedHashFunc = Encode65599Hash<_HashTy>;
         }
 
         constexpr Hash32 EncodeHash32(std::string_view s) noexcept
         {
-            return _internal_hash::SelectedHashFunc<Hash32>(s);
+            return _internal_hash::Encode65599Hash<Hash32>(s);
         }
 
         constexpr Hash64 EncodeHash64(std::string_view s) noexcept
         {
-            return _internal_hash::SelectedHashFunc<Hash64>(s);
+            return _internal_hash::Encode65599Hash<Hash64>(s);
         }
 
-        constexpr Hash EncodeHash(cstd::string_view s) noexcept
+        constexpr Hash EncodeHash(std::string_view s) noexcept
         {
-            return _internal_hash::SelectedHashFunc<Hash>(s);
+            return _internal_hash::Encode65599Hash<Hash>(s);
         }
     }
 }
