@@ -18,3 +18,22 @@
 #   define FD_CURR_COMPILER FD_UNKNOWN_COMPILER
 
 #endif
+
+
+namespace fd
+{
+    struct UnknownCompilerTag {};
+    struct ClangCompilerTag {};
+    struct MsvcCompilerTag {};
+
+#   if FD_CURR_COMPILER == FD_CLANG_COMPILER
+    using CurrCompilerTag = ClangCompilerTag;
+
+#   elif FD_CURR_COMPILER == FD_MSVC_COMPILER
+    using CurrCompilerTag = MsvcCompilerTag;
+
+#   else
+    using CurrCompilerTag = UnknownCompilerTag;
+
+#   endif
+}
