@@ -22,7 +22,8 @@ namespace fd::refl
     {
         constexpr size_t GetDynamicPrefixLen(std::string_view rawName, std::string_view fixedPrefix) noexcept
         {
-            using namespace std;
+            using std::array;
+            using std::string_view;
 
             // 공백이 포함된 동적 접두사들
             constexpr array<string_view, 4> dyPrefixs{ "enum ", "class ", "struct ", "union " };

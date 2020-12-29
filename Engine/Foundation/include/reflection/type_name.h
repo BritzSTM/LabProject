@@ -9,6 +9,8 @@
     Clang
     [Front, Compiled] namespace::ABC *&
 
+    2. 호환성을 위해 저수준으로 작성한 것이 많아 못생긴 것이 많음
+
 */
 #pragma once
 
@@ -55,29 +57,27 @@ namespace fd::refl
 {
     namespace _internal_type_name
     {
-        template<typename _Ty>
+        // base_type_name_traits help function
+        
+        template<typename _Ty, typename _Bt = base_type_name_traits<_Ty>>
         inline static constexpr size_t GetRawTypeNameStartPos() noexcept
         {
-            using bt = base_type_name_traits<_Ty>;
-            return bt::fixedPrefix.size() + bt::kDynamicPrefixLen;
+            return _Bt::fixedPrefix.size() + _Bt::kDynamicPrefixLen;
         }
 
-        template<typename _Ty>
+        template<typename _Ty, typename _Bt = base_type_name_traits<_Ty>>
         inline static constexpr size_t GetRawTypeNameEndPos() noexcept
         {
-            using bt = base_type_name_traits<_Ty>;
-            return bt::rawName.size() - bt::fixedSubfix.size();
+            return _Bt::rawName.size() - _Bt::fixedSubfix.size();
         }
 
-        template<typename _Ty>
+        template<typename _Ty, typename _Bt = base_type_name_traits<_Ty>>
         constexpr size_t CalNormalizedFullNameLen() noexcept
         {
-            using bt = base_type_name_traits<_Ty>;
-
             size_t len{ 0 };
             for (size_t i{ GetRawTypeNameStartPos<_Ty>() }; i < GetRawTypeNameEndPos<_Ty>(); ++i)
             {
-                if (bt::rawName[i] != ' ')
+                if (_Bt::rawName[i] != ' ')
                 {
                     ++len;
                 }
@@ -86,44 +86,98 @@ namespace fd::refl
             return len;
         }
 
-        template<typename _Ty>
-        constexpr auto GetNormalizedFullName() noexcept
+        template<typename _Ty, typename _Bt = base_type_name_traits<_Ty>>
+        constexpr auto NormalizeFullTypeName() noexcept
         {
-            using namespace std;
-            using bt = base_type_name_traits<_Ty>;
-
             constexpr size_t kArrSize{ CalNormalizedFullNameLen<_Ty>() };
-            array<char, kArrSize + 1> arr{ };
+            std::array<char, kArrSize + 1> arr{ };
 
             for (size_t tyIdx{ GetRawTypeNameStartPos<_Ty>() }, arrIdx{ 0 }; tyIdx < GetRawTypeNameEndPos<_Ty>(); ++tyIdx)
             {
-                if (bt::rawName[tyIdx] != ' ')
+                if (_Bt::rawName[tyIdx] != ' ')
                 {
-                    arr[arrIdx++] = bt::rawName[tyIdx];
+                    arr[arrIdx++] = _Bt::rawName[tyIdx];
                 }
             }
             arr[kArrSize] = '\0';
 
             return arr;
         }
-    }
 
-    template<typename _Ty>
-    struct type_name_traits
-    {
-        static constexpr auto normalizedFullName{ _internal_type_name::GetNormalizedFullName<_Ty>() }; /** Normalized name in std::array */
 
-        /** 해당유형의 이름과 비교합니다. 컴파일 타임에 이름 비교시 이 함수를 이용할 것. */
-        static constexpr bool compare(std::string_view name) noexcept
+        template<typename _Ty>
+        struct FullTypeNameStorage
         {
-            if ((normalizedFullName.size() - 1) != name.size())
+            static constexpr auto fullTypeName{ NormalizeFullTypeName<_Ty>() }; /** Normalized full type name in std::array */
+        };
+
+        // full_type_name_storage help function
+
+        /** namespace ::심볼의 마지막 부분의 위치를 반환합니다. 미확인시 npos 반환 */
+        template<typename _Ty, typename _Fs = FullTypeNameStorage<_Ty>>
+        constexpr size_t GetLastNsSimbolPos() noexcept
+        {
+            for (size_t i{ _Fs::fullTypeName.size() - 1 }; i != 1; --i)
+            {
+                if (_Fs::fullTypeName[i] == ':' && _Fs::fullTypeName[i - 1] == ':')
+                {
+                    return i;
+                }
+            }
+
+            return std::string_view::npos;
+        }
+
+        template<typename _Ty, typename _Fs = FullTypeNameStorage<_Ty>>
+        inline constexpr size_t GetNamespaceLen() noexcept
+        {
+            size_t pos{ GetLastNsSimbolPos<_Ty, _Fs>() };
+
+            return (pos == std::string_view::npos) ? 0 : (pos - 1);
+        }
+
+        template<typename _Ty, typename _Fs = FullTypeNameStorage<_Ty>>
+        constexpr auto ExtractNamespaceName() noexcept
+        {
+            constexpr size_t kLen{ GetNamespaceLen<_Ty>() };
+
+            std::array<char, kLen + 1> arr{};
+            for (size_t i{ 0 }; i < kLen; ++i)
+            {
+                arr[i] = _Fs::fullTypeName[i];
+            }
+            arr[kLen] = '\0';
+
+            return arr;
+        }
+
+        template<typename _Ty, typename _Fs = FullTypeNameStorage<_Ty>>
+        constexpr auto ExtractTypeName() noexcept
+        {
+            constexpr size_t kTyPos{ GetNamespaceLen<_Ty, _Fs>() ? (GetNamespaceLen<_Ty, _Fs>() + 2) : 0 };
+            constexpr size_t kLen{ _Fs::fullTypeName.size() - kTyPos };
+
+            std::array<char, kLen> arr{};
+            for (size_t i{ 0 }; i < kLen; ++i)
+            {
+                arr[i] = _Fs::fullTypeName[kTyPos + i];
+            }            
+            arr[kLen - 1] = '\0';
+
+            return arr;
+        }
+
+        template<size_t _Size>
+        constexpr bool CompareName(const std::array<char, _Size>& name1, std::string_view name2) noexcept
+        {
+            if ((name1.size() - 1) != name2.length())
             {
                 return false;
             }
 
-            for (size_t i{ 0 }; i < name.size(); ++i)
+            for (size_t i{ 0 }; i < name2.length(); ++i)
             {
-                if (name[i] != normalizedFullName[i])
+                if (name1[i] != name2[i])
                 {
                     return false;
                 }
@@ -131,5 +185,34 @@ namespace fd::refl
 
             return true;
         }
-    };
+
+        template<typename _Ty>
+        struct type_name_traits
+            : FullTypeNameStorage<_Ty>
+        {
+            static constexpr auto namespaceName{ ExtractNamespaceName<_Ty>() }; /** Normalized namespace name in std::array */
+            static constexpr auto typeName{ ExtractTypeName<_Ty>() }; /** Normalized type name in std::array */
+
+            /** 해당유형의 전체이름과 비교합니다. 컴파일 타임 비교시 이 함수를 이용할 것. */
+            inline static constexpr bool CompareFullTypeName(std::string_view name) noexcept
+            {
+                return CompareName(fullTypeName, name);
+            }
+
+            /** 해당유형의 네임스페이스 이름과 비교합니다. 컴파일 타임 비교시 이 함수를 이용할 것. */
+            inline static constexpr bool CompareNamespaceName(std::string_view name) noexcept
+            {
+                return CompareName(namespaceName, name);
+            }
+
+            /** 해당유형의 이름과 비교합니다. 컴파일 타임 비교시 이 함수를 이용할 것. */
+            inline static constexpr bool CompareTypeName(std::string_view name) noexcept
+            {
+                return CompareName(typeName, name);
+            }
+        };
+    }
+
+    template<typename _Ty>
+    using type_name_traits = _internal_type_name::type_name_traits<_Ty>;
 }
