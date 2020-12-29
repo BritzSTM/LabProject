@@ -1,48 +1,35 @@
+/*
+    ! 이 헤더파일을 직접 포함하지 말 것.
+*/
 #pragma once
-
-#include <string_view>
 
 
 namespace fd::refl
 {
-    namespace _internal_type_name_clang
+    /*
+        @brief 타입이름이 포함된 문자열을 획득합니다. 라이브러리 사용자는 이 함수를 직접 호출하지 말 것.
+        @detail
+         이 함수는 정의는 규칙을 위반하면서 정의했습니다. MSVC의 __FUNCSIG__ 매크로는 해당함수의 서명을 문자열로 획득하기 때문입니다.
+        만약 어떤 namespace에 이 함수가 정의된다면 namespace가 포함된 더 길다란 문자열이 생성됩니다.
+    */
+    template<typename _Ty>
+    constexpr auto __cdecl _rn_cl(int = 0) noexcept
     {
         /*
-            __PRETTY_FUNCTION__는 다음과 같은 형식을 가진다.
-            std::string_view GetTypeFullName() [_Ty = fd::ESomeType]
-            std::string_view GetTypeFullName() [_Ty = std::basic_string_view<char, std::char_traits<char> >]
+            clang __PRETTY_FUNCTION__는 다음과 같은 형식을 가진다.
+            auto __cdecl fd::refl::_rn_cl(int) [_Ty = fd::ESomeType]
+            auto __cdecl fd::refl::_rn_cl(int) [_Ty = std::basic_string_view<char, std::char_traits<char> >]
         */
-
-        constexpr std::string_view ExtractTypeFullNameImpl(std::string_view fnSig) noexcept
-        {
-            using namespace std;
-
-            if (size_t leftABPos{ fnSig.find("[_Ty = ") }; leftABPos != fnSig.npos)
-            {
-                // 7은 [_Ty = 의 길이
-                fnSig.remove_prefix(leftABPos + 7);
-            }
-            else
-            {
-                return {};
-            }
-
-            // 마지막 기호( ']' )만 제거하면 된다.
-            fnSig.remove_suffix(1);
-
-            return fnSig;
-        }
-
-        template<typename _Ty>
-        constexpr std::string_view ExtractTypeFullName() noexcept
-        {
-            return ExtractTypeFullNameImpl(__PRETTY_FUNCTION__);
-        }
+        return __PRETTY_FUNCTION__;
     }
 
     template<typename _Ty>
-    constexpr std::string_view GetTypeFullName() noexcept
+    struct base_type_name_traits<_Ty, ClangCompilerTag>
     {
-        return _internal_type_name_clang::ExtractTypeFullName<_Ty>();
-    }
+        static constexpr std::string_view rawName{ _rn_cl<_Ty>() };
+        static constexpr std::string_view fixedPrefix{ "auto __cdecl fd::refl::_rn_cl(int) [_Ty = " };
+        static constexpr std::string_view fixedSubfix{ "]" };
+
+        static constexpr size_t kDynamicPrefixLen{ 0 };
+    };
 }
