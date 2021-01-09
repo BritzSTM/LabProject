@@ -53,21 +53,56 @@ namespace fd
         {
             using type = _Ty;
         };
+
+        template<typename _Ty, size_t _depth>
+        struct get_decl_type_depth_basis
+        {
+            constexpr static size_t depth{ _depth };
+        };
+
+        template<typename _Ty, size_t _depth, typename _RemovedCvTy = std::remove_cv_t<_Ty>>
+        struct get_decl_type_depth_impl
+            : std::conditional_t<std::is_reference_v<_RemovedCvTy>, get_decl_type_depth_impl<std::remove_reference_t<_RemovedCvTy>, _depth + 1>,
+            std::conditional_t<std::is_pointer_v<_RemovedCvTy>, get_decl_type_depth_impl<std::remove_pointer_t<_RemovedCvTy>, _depth + 1>,
+            std::conditional_t<std::is_array_v<_RemovedCvTy>, get_decl_type_depth_impl<std::remove_pointer_t<std::decay_t<_RemovedCvTy>>, _depth + 1>, get_decl_type_depth_basis<_RemovedCvTy, _depth>>>>
+        {
+
+        };
+
+        template<typename _Ty, size_t _curr, size_t _depth, typename _RemovedCvTy = std::remove_cv_t<_Ty>>
+        struct decl_type_level_impl
+            : std::conditional_t<(_curr == _depth), identity<_Ty>,
+            std::conditional_t<std::is_reference_v<_RemovedCvTy>, decl_type_level_impl<std::remove_reference_t<_RemovedCvTy>, _curr + 1, _depth>,
+            std::conditional_t<std::is_pointer_v<_RemovedCvTy>, decl_type_level_impl<std::remove_pointer_t<_RemovedCvTy>, _curr + 1, _depth>,
+            std::conditional_t<std::is_array_v<_RemovedCvTy>, decl_type_level_impl<std::remove_pointer_t<std::decay_t<_RemovedCvTy>>, _curr + 1, _depth>, identity<_Ty>>>>>
+        {
+
+        };
     }
 
-    /** 순수한 자료형을 획득한다. */
-    template<typename _Ty, typename _RemovedCvrefTy = remove_cvref_t<_Ty>>
-    struct seed_traits
-        : std::conditional_t<
-        std::is_pointer_v<_RemovedCvrefTy>,
-        seed_traits<std::remove_pointer_t<_RemovedCvrefTy>>,
-        std::conditional_t<std::is_array_v<_RemovedCvrefTy>, seed_traits<std::decay_t<_RemovedCvrefTy>>, _internal_type_traits_ext::identity<remove_cvref_t<_RemovedCvrefTy>>>
-        >
-    {
+    /** 선언타입의 선언구조 깊이를 획득합니다. */
+    template<typename _Ty>
+    struct get_decl_type_depth
+        : _internal_type_traits_ext::get_decl_type_depth_impl<_Ty, 0> { };
 
+    /** 전달된 타입과 깊이를 이용해 해당 깊이에 맞는 타입을 반환합니다. */
+    template<typename _Ty, size_t _depth>
+    struct decl_type_level : _internal_type_traits_ext::decl_type_level_impl<_Ty, 0, _depth> { };
+
+    /** seed type에 관련된 특성을 추론 */
+    template<typename _Ty>
+    struct seed_traits final
+    {
+        static constexpr size_t depth{ get_decl_type_depth<_Ty>::depth }; // seed type에 도달하기 위한 깊이
+
+        using type = typename decl_type_level<_Ty, depth>::type;; // Seed type
+
+        // 해당 레벨에 대한 타입. 최상층은 0을 의미한다
+        template<size_t _depth>
+        using level_t = typename decl_type_level<_Ty, _depth>::type;
     };
 
-    /** seed_traits helper */
+    /** seed_traits helper. 즉시 seed type을 반환 */
     template<typename _Ty>
     using seed_traits_t = typename seed_traits<_Ty>::type;
 
