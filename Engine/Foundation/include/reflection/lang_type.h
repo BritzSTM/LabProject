@@ -275,7 +275,7 @@ namespace fd::refl
 
             if constexpr (is_fundamental_v<Ty>)
             {
-                return FDTypeToETypeCLASS<Ty>();
+                return FDTypeToETypeCLASS<remove_cvref_t<Ty>>();
             }
             // compound types
             else if (is_reference_v<Ty>)
