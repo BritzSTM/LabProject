@@ -151,4 +151,62 @@ namespace fd
     {
         using return_type = _Res;
     };
+
+
+    // Array
+
+    /** 배열의 차원을 획득합니다. 0일 경우 배열이 아닙니다. 최대 8차원까지 지원합니다. */
+    template<typename _Ty>
+    struct get_array_dim
+    {
+        static constexpr size_t dim = 0;
+    };
+
+    template<typename _Ty, size_t _a>
+    struct get_array_dim<_Ty[_a]>
+    {
+        static constexpr size_t dim = 1;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b>
+    struct get_array_dim<_Ty[_a][_b]>
+    {
+        static constexpr size_t dim = 2;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c>
+    struct get_array_dim < _Ty[_a][_b][_c]>
+    {
+        static constexpr size_t dim = 3;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c, size_t _d>
+    struct get_array_dim<_Ty[_a][_b][_c][_d]>
+    {
+        static constexpr size_t dim = 4;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c, size_t _d, size_t _e>
+    struct get_array_dim<_Ty[_a][_b][_c][_d][_e]>
+    {
+        static constexpr size_t dim = 5;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c, size_t _d, size_t _e, size_t _f>
+    struct get_array_dim<_Ty[_a][_b][_c][_d][_e][_f]>
+    {
+        static constexpr size_t dim = 6;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c, size_t _d, size_t _e, size_t _f, size_t _g>
+    struct get_array_dim<_Ty[_a][_b][_c][_d][_e][_f][_g]>
+    {
+        static constexpr size_t dim = 7;
+    };
+
+    template<typename _Ty, size_t _a, size_t _b, size_t _c, size_t _d, size_t _e, size_t _f, size_t _g, size_t _h>
+    struct get_array_dim<_Ty[_a][_b][_c][_d][_e][_f][_g][_h]>
+    {
+        static constexpr size_t dim = 8;
+    };
 }
