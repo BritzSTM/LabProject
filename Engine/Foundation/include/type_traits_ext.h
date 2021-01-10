@@ -209,4 +209,8 @@ namespace fd
     {
         static constexpr size_t dim = 8;
     };
+
+    /** get_array_dim helper */
+    template<typename _Ty>
+    inline constexpr size_t get_array_dim_v = get_array_dim<_Ty>::dim;
 }
