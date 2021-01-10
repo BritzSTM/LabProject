@@ -43,7 +43,15 @@ namespace fd::refl
         FunctionPtr,
         MemberDataPtr,
         MemberFunctionPtr,
-        Array,
+        Array,  /**< 모든 배열 수준을 의미 */
+        Array1D,
+        Array2D,
+        Array3D,
+        Array4D,
+        Array5D,
+        Array6D,
+        Array7D,
+        Array8D,
         Function,
         Enum,
         EnumClass,
@@ -211,6 +219,50 @@ namespace fd::refl
             return ETypeCLASS::Unknown;
         }
 
+        template<typename _Ty, size_t _dim = get_array_dim_v<_Ty>>
+        constexpr ETypeCLASS ArrayTypeToETypeCLASS() noexcept
+        {
+            switch (_dim)
+            {
+            case 1:
+                return ETypeCLASS::Array1D;
+                break;
+
+            case 2:
+                return ETypeCLASS::Array2D;
+                break;
+
+            case 3:
+                return ETypeCLASS::Array3D;
+                break;
+
+            case 4:
+                return ETypeCLASS::Array4D;
+                break;
+
+            case 5:
+                return ETypeCLASS::Array5D;
+                break;
+
+            case 6:
+                return ETypeCLASS::Array6D;
+                break;
+
+            case 7:
+                return ETypeCLASS::Array7D;
+                break;
+
+            case 8:
+                return ETypeCLASS::Array8D;
+                break;
+
+            default:
+                return ETypeCLASS::Unknown;
+            }
+
+            return ETypeCLASS::Unknown;
+        }
+
         template<typename _Ty>
         constexpr ETypeCLASS GetTypeCLASS() noexcept
         {
@@ -245,7 +297,7 @@ namespace fd::refl
             }
             else if (is_array_v<Ty>)
             {
-                return ETypeCLASS::Array;
+                return ArrayTypeToETypeCLASS<Ty>();
             }
             else if (is_function_v<Ty>)
             {
