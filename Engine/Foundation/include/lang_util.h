@@ -34,4 +34,7 @@
 */
 
 /** 순수 인터페이스 속성을 부여. 부여된 객체는 인스턴스 생성을 비허용. */
-#define FD_PURE_INTERFACE_PROP(CLASS_NAME) FD_DISALLOW_CREATE_INSTANCE(CLASS_NAME); public: static_assert(1)
+#define FD_PURE_INTERFACE_PROP(CLASS_NAME) \
+    FD_DISALLOW_CREATE_INSTANCE(CLASS_NAME); \
+    public: \
+        virtual ~CLASS_NAME()
