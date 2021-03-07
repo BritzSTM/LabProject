@@ -53,7 +53,6 @@ namespace fd::refl
         return { _internal_type_info::SDeclTypeStorage<_Ty>::declTypes };
     }
 
-
     class CDeclQuery;
 
     /** CDeclQuery의 예외객체 */
@@ -93,7 +92,7 @@ namespace fd::refl
         // Query Methods
 
         /** 호출한 질의 객체의 상태를 유지 */
-        [[nodiscard]]CDeclQuery Is() noexcept; 
+        [[nodiscard]] CDeclQuery Is() noexcept;
 
         /** 다음 선언에 대한 질의로 상태 변경. 불가능하다면 예외가 발생 */
         CDeclQuery& Next();
@@ -201,23 +200,6 @@ namespace fd::refl
         bool m_isCorrectQuery;
     };
 
-    class CType;
-
-    enum class EProfilePolicy : byte
-    {
-        None,
-        Generator, /**< 생성기를 통한 데이터 획득 전략 */
-        Custom     /**< 수동으로 작성된 데이터 획득 전략 */
-    };
-
-    /** 복합구조 내부에서 정의된 필드의 정보 */
-    struct SFieldType
-    {
-        CType const* pType;    /** 필드의 타입 */
-        std::string_view name; /** 필드 이름 */
-        size_t order;          /** 필드 순서 */
-    };
-
     namespace _internal_type_info
     {
         /**
@@ -260,178 +242,164 @@ namespace fd::refl
         friend struct _internal_type_info::FieldProxyForGenerator<_CLASS_NAME_>; \
         class CExporter_Gen // 이 클래스는 생성기를 통해 반드시 구현되어야 함.
 
-    /**
-        1. 기본 생성자를 제외한 빌드 전략인자는 None이 될 수 없음
-    */
-    class CFields
-    {        
-    public:
-        ~CFields() = default;
+    struct STypeMeta
+    {
+        static const char* GetTypeName(const STypeMeta& v) noexcept;
+        static size_t GetTypeSize(const STypeMeta& v) noexcept;
 
-        constexpr CFields()
-            : m_fieldTypes{ }
-            , m_policy{ EProfilePolicy::None }
-        {
-
-        }
-
-        constexpr CFields(span<const SFieldType> fields, const EProfilePolicy policy)
-            : m_fieldTypes{ fields }
-            , m_policy{ policy }
-        {
-            Ensures(m_policy != EProfilePolicy::None);
-        }
-
-        constexpr CFields(const CFields& src)
-            : m_fieldTypes{ src.m_fieldTypes }
-            , m_policy{ src.m_policy }
-        {
-
-        }
-
-        constexpr CFields(CFields&& src) noexcept
-            : m_fieldTypes{ std::move(src.m_fieldTypes) }
-            , m_policy{ src.m_policy }
-        {
-            src.m_fieldTypes = {};
-            src.m_policy = EProfilePolicy::None;
-        }
-
-        constexpr CFields& operator=(const CFields& src)
-        {
-            using std::swap;
-
-            CFields cp{ src };
-            swap(*this, cp);
-
-            return *this;
-        }
-
-        constexpr CFields& operator=(CFields&& src) noexcept
-        {
-            using std::swap;
-
-            CFields tmp{ std::move(src) };
-            swap(*this, tmp);
-
-            return *this;
-        }
-
-        constexpr EProfilePolicy GetBuildPolicy() const noexcept
-        {
-            return m_policy;
-        }
-
-        constexpr size_t GetCount() const noexcept
-        {
-            return m_fieldTypes.size();
-        }
-
-        constexpr const SFieldType& GetField(const size_t index) const
-        {
-            Expects(index < m_fieldTypes.size());
-
-            return m_fieldTypes[index];
-        }
-
-        inline constexpr const SFieldType& operator[](const size_t index) const
-        {
-            return (*this).GetField(index);
-        }
-
-    private:
-        span<const SFieldType> m_fieldTypes;
-        EProfilePolicy m_policy;
+        const char* pszName;
+        size_t size;
     };
 
-    /** CFields를 획득합니다. _policy는 아직 미지원 */
-    template<typename _Ty, EProfilePolicy _policy = EProfilePolicy::Generator>
-    CFields GetFields() noexcept
+    const char* STypeMeta::GetTypeName(const STypeMeta& v) noexcept
     {
-        // 현재는 생성된 정책만 사용하도록 강제
-        Expects(_policy == EProfilePolicy::Generator);
-
-        using exporter = _internal_type_info::FieldProxyForGenerator<_Ty>;
-
-        return { exporter::ExportFields(), EProfilePolicy::Generator };
+        return v.pszName;
     }
 
-
-
-
-    
-    class CType
+    size_t STypeMeta::GetTypeSize(const STypeMeta& v) noexcept
     {
-        /*
-            컴파일 타임 타입 확인 및 무수하게 많은 타입들이 파생될 예정이므로 가상 테이블을 사용하지 않는다.
-            따라서 힙에서 생성되지 않음을 보장해야 한다.
-        */
-    public:
-        ~CType() = default;
+        return v.size;
+    }
 
-        constexpr CType(
-            std::string_view name, const hash::Hash typeHash, const size_t size, span<const SDeclType> declTypes, span<const SFieldType> fieldTypes) noexcept;
+    struct STypeDetailMeta
+        : public STypeMeta
+    {
+        static const char* GetTypeHelp(const STypeDetailMeta& v) noexcept;
 
-        constexpr std::string_view GetFullName() const noexcept;
-        constexpr std::string_view GetName() const noexcept;
-        constexpr std::string_view GetNamespaceName() const noexcept;
-
-        constexpr size_t GetSize() const noexcept;
-        constexpr hash::Hash GetHash() const noexcept;
-
-        // 현재 선언 유형에 대한 질의
-        constexpr CDeclQuery Is() const noexcept;
-
-        // 필드 질의
-        constexpr bool HasFields() const noexcept;
-        std::optional<span<const SFieldType>> GetFields() const noexcept;
+        const char* pszHelp;
     };
 
-
-    namespace _internal_type_info
+    const char* STypeDetailMeta::GetTypeHelp(const STypeDetailMeta& v) noexcept
     {
-        template<typename _Ty>
-        class CTypeHardImpl final
-            : public CType
-        {
-        public:
-            using Type = _Ty;
+        return v.pszHelp;
+    }
+
+    struct ITypeMeta
+    {
+        FD_PURE_INTERFACE_PROP(ITypeMeta);
+
+        virtual std::string_view GetName() const noexcept = 0;
+        virtual size_t GetSize() const noexcept = 0;
+        virtual size_t GetHelp() const noexcept = 0;
+    };
+
+    struct SEmptyExtendMeta { };
+
+    struct SFieldTypeMeta
+    {
+        static const char* GetFieldName(const SFieldTypeMeta& v) noexcept;
+        static size_t GetFieldOffset(const SFieldTypeMeta& v) noexcept;
+
+        const char* pszName;
+        size_t offset;
+    };
+
+    const char* SFieldTypeMeta::GetFieldName(const SFieldTypeMeta& v) noexcept
+    {
+        return v.pszName;
+    }
+
+    size_t SFieldTypeMeta::GetFieldOffset(const SFieldTypeMeta& v) noexcept
+    {
+        return v.offset;
+    }
+
+    struct STypeFieldDetailMeta
+        : public SFieldTypeMeta
+    {
+        static const char* GetFieldTypeHelp(const STypeFieldDetailMeta& v) noexcept;
+
+        const char* pszHelp;
+    };
+
+    const char* STypeFieldDetailMeta::GetFieldTypeHelp(const STypeFieldDetailMeta& v) noexcept
+    {
+        return v.pszHelp;
+    }
+
+    struct IFieldTypeMeta
+    {
+        FD_PURE_INTERFACE_PROP(IFieldTypeMeta);
+
+        virtual std::string_view GetName() const noexcept = 0;
+        virtual size_t GetOffset() const noexcept = 0;
+        virtual std::string_view GetHelp() const noexcept = 0;
+    };
+
+    /** 생성된 meta 정보의 유형입니다 */
+    enum class EMetaType : uint8
+    {
+        Compiler,
+        Generator,
+        Custom
+    };
+
+    struct IType;
+
+    class ReflectionException
+        : public std::logic_error
+    {
+    public:
+        virtual ~ReflectionException();
+
+        ReflectionException(gsl::not_null<const IType*> pErrorData, std::string_view msg);
+        ReflectionException(const ReflectionException&) = default;
+        ReflectionException(ReflectionException&&) noexcept = default;
+
+        ReflectionException& operator=(const ReflectionException&) = default;
+        ReflectionException& operator=(ReflectionException&&) noexcept = default;
+
+        const IType* GetErrorData() const noexcept;
         
-        public:
-            ~CTypeHardImpl() = default;
+    private:
+        const IType* const m_pErrorData;
+    };
 
-            constexpr CTypeHardImpl() noexcept
-                : CType(type_name_traits<_Ty>::fullTypeName.data(),
-                    hash::EncodeHash(type_name_traits<_Ty>::fullTypeName.data()), sizeof(Type), GetDeclTypes<_Ty>())
-            {
 
-            }
-        };
 
-        template<typename _Ty>
-        inline const CTypeHardImpl<_Ty> g_typeHardImpl{};
-    }
+    struct IType
+        : public IFieldTypeMeta
+    {
+        FD_PURE_INTERFACE_PROP(IType);
+
+        virtual EMetaType GetMetaType() const noexcept = 0;
+        virtual CDeclQuery Is() const noexcept = 0;
+
+        virtual size_t GetFieldCount() const noexcept = 0;
+        virtual IFieldTypeMeta* GetField(const size_t idx) const = 0;
+        virtual IFieldTypeMeta* GetField(const size_t idx, std::nothrow_t) const noexcept = 0;
+    };
+
+
+    template<EMetaType _type, typename _TypeMeta, typename _ExtendMeta>
+    class CType
+        : private _TypeMeta
+        , private _ExtendMeta
+        , public IType
+    {
+
+    };
 
     /** @brief 타입정보를 획득합니다 */
     template<typename _Ty>
-    CType const* GetType();
+    IType const* GetType();
 
     /** @brief 변수에서 타입정보를 획득합니다 */
     template<typename _Ty>
-    CType const* GetType(_Ty&);
+    IType const* GetType(_Ty&);
 
     /** @brief 타입정보를 획득합니다. 타입정보 조회 불가능이라도 예외가 발생하지 않습니다 */
     template<typename _Ty>
-    CType const* GetType(std::nothrow_t) noexcept;
+    IType const* GetType(std::nothrow_t) noexcept;
 
     /** @brief 변수에서 타입정보를 획득합니다. 타입정보 조회 불가능이라도 예외가 발생하지 않습니다 */
     template<typename _Ty>
-    CType const* GetType(_Ty&, std::nothrow_t) noexcept;
+    IType const* GetType(_Ty&, std::nothrow_t) noexcept;
 
 
     /** @brief 런타임에 타입정보를 획득합니다. main 함수 진입이후에 호출이 유효함 */
-    CType const* GetType(std::string_view);
+    IType const* GetType(std::string_view);
 
     /** @brief 변수에서 타입정보를 획득합니다. main 함수 진입이후에 호출이 유효함. 예외를 발생하지 않음 */
-    CType const* GetType(std::string_view, std::nothrow_t) noexcept;
+    IType const* GetType(std::string_view, std::nothrow_t) noexcept;
 }

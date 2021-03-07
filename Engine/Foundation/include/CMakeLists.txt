@@ -18,6 +18,7 @@ target_sources(${PROJECT_NAME}
         base_types.h
         version.h
         hash.h
+        lang_util.h
         enum_util.h
         type_traits_ext.h
         span.h

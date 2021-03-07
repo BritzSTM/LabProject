@@ -4,4 +4,6 @@ target_sources(${PROJECT_NAME}
         type_name_clang.h
         type_name_msvc.h
         type_name.h
+        type_info.h
+        type_info.cpp
         dummy.cpp)
