@@ -5,6 +5,6 @@ namespace fd::refl::_internal_dummy
 {
     void test()
     {
-        static_assert(GetTypeFullName<ETypeCLASS>() == "fd::refl::ETypeCLASS");
+        static_assert(type_name_traits<ETypeCLASS>::CompareFullTypeName("fd::refl::ETypeCLASS"));
     }
 }

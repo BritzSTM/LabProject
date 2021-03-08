@@ -129,7 +129,7 @@ namespace fd::refl
         template<typename _Ty, typename _Fs = FullTypeNameStorage<_Ty>>
         inline constexpr size_t GetNamespaceLen() noexcept
         {
-            size_t pos{ GetLastNsSimbolPos<_Ty, _Fs>() };
+            constexpr size_t pos{ GetLastNsSimbolPos<_Ty, _Fs>() };
 
             return (pos == std::string_view::npos) ? 0 : (pos - 1);
         }
