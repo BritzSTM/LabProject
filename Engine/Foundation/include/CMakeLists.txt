@@ -1,5 +1,5 @@
 # Precompile header
-target_precompile_headers(${PROJECT_NAME} PRIVATE "${FD_SOURCE_DIR}/pch.h")
+# target_precompile_headers(${PROJECT_NAME} PRIVATE "${FD_SOURCE_DIR}/pch.h")
 
 # GenerateFiles
 set(_FD_GEN_FILE_LIST)

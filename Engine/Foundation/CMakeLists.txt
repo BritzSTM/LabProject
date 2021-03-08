@@ -18,6 +18,10 @@ set(PROJECT_SHORT_NAME fd)
 
 message(STATUS "${PROJECT_NAME}(${PROJECT_SHORT_NAME}) Static LIB(${CMAKE_BUILD_TYPE}) ${LIB_VERSION_STRING}")
 
+# MSVC 컴파일러 언어 옵션 추가
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 # Path
 set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 #set(FD_VCPKG_PORT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/VcpkgPort")
