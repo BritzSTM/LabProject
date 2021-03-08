@@ -19,8 +19,9 @@ set(PROJECT_SHORT_NAME fd)
 message(STATUS "${PROJECT_NAME}(${PROJECT_SHORT_NAME}) Static LIB(${CMAKE_BUILD_TYPE}) ${LIB_VERSION_STRING}")
 
 # MSVC 컴파일러 언어 옵션 추가
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 
 # Path
 set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -31,7 +32,7 @@ set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 # ! 하위 폴더들은 자동 생성파일이 아니라면 GLOB을 통한 파일 등록을 하지 말 것.
 #   대신 target_sources로 등록할 것
 add_library(${PROJECT_NAME} STATIC "")
-
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 find_package(Microsoft.GSL CONFIG REQUIRED)
 target_link_libraries(Foundation PRIVATE Microsoft.GSL::GSL)
 

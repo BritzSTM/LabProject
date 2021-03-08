@@ -1,5 +1,6 @@
 #pragma once
-
+#ifndef __GG__
+#define __GG__
 #include "lang_type.h"
 #include "type_name.h"
 #include "../span.h"
@@ -200,49 +201,6 @@ namespace fd::refl
     //    bool m_isCorrectQuery;
     //};
 
-//    namespace _internal_type_info
-//    {
-//        /**
-//            복합구조 내부에서 SFieldType들을 수출하기 위한 proxy 인터페이스.
-//            _Ty는 내부에 CExporter_Gen 클래스를 보유해야함
-//        */
-//        template<typename _Ty>
-//        struct FieldProxyForGenerator final
-//        {
-//        private:
-//            struct Supported {};
-//            struct NotSupoorted {};
-//
-//            template<typename _Ty>
-//            static Supported checkSupport(typename std::decay_t<_Ty::CExporter_Gen>*);
-//
-//            template<typename _Ty>
-//            static NotSupoorted checkSupport(...);
-//
-//        public:
-//            static constexpr bool IsSupport{ std::is_same_v<decltype(checkSupport<_Ty>(nullptr)), Supported> };
-//
-//            template<bool _support = IsSupport>
-//            static span<const SFieldType> ExportFields() noexcept
-//            {
-//                if constexpr (_support)
-//                    return ExporterType::ExportFields();
-//
-//                return {};
-//            }
-//        };
-//    }
-//
-//    /** 해당 타입 맴버의 위치를 반환합니다. */
-//#define FD_REFL_OFFSETOF(_TY_NAME_, _MEMBER_NAME_) (fd::size_t)(&((_TY_NAME_*)0)->_MEMBER_NAME_)
-//
-//    /** 복합 자료형에 필드 수출업자를 선언합니다. */
-//#define FD_REFL_DECL_FIELD_EXPORTER(_CLASS_NAME_) \
-//    private:\
-//        friend struct _internal_type_info::FieldProxyForGenerator<_CLASS_NAME_>; \
-//        class CExporter_Gen // 이 클래스는 생성기를 통해 반드시 구현되어야 함.
-
-
     /*
         TypeMeta를 나타내는 구조체들은 비상속 위임 interface를 사용함.
         필수 interface는 반드시 해당 타입이 지원해야 함.
@@ -338,6 +296,48 @@ namespace fd::refl
         virtual size_t GetOffset() const noexcept = 0;
         virtual std::string_view GetHelp() const noexcept = 0;
     };
+
+    namespace _internal_type_info
+    {
+        /**
+            복합구조 내부에서 SFieldType들을 수출하기 위한 proxy 인터페이스.
+            _Ty는 내부에 CExporter_Gen 클래스를 보유해야함
+        */
+        template<typename _Ty>
+        struct FieldProxyForGenerator final
+        {
+        private:
+            struct Supported {};
+            struct NotSupoorted {};
+
+            template<typename _Ty>
+            static Supported checkSupport(typename std::decay_t<typename _Ty::CExporter_Gen>*);
+
+            template<typename _Ty>
+            static NotSupoorted checkSupport(...);
+
+        public:
+            static constexpr bool IsSupport{ std::is_same_v<decltype(checkSupport<_Ty>(nullptr)), Supported> };
+            // ->span<const SFieldType>
+            template<bool _support = IsSupport>
+            static auto ExportFields() noexcept
+            {
+                if constexpr (_support)
+                    return ExporterType::ExportFields();
+
+                return {};
+            }
+        };
+    }
+
+    /** 해당 타입 맴버의 위치를 반환합니다. */
+#define FD_REFL_OFFSETOF(_TY_NAME_, _MEMBER_NAME_) (fd::size_t)(&((_TY_NAME_*)0)->_MEMBER_NAME_)
+
+    /** 복합 자료형에 필드 수출업자를 선언합니다. */
+#define FD_REFL_DECL_FIELD_EXPORTER(_CLASS_NAME_) \
+    private:\
+        friend struct _internal_type_info::FieldProxyForGenerator<_CLASS_NAME_>; \
+        class CExporter_Gen // 이 클래스는 생성기를 통해 반드시 구현되어야 함.
 
     /** 생성된 meta 정보의 유형입니다 */
     enum class EMetaType : uint8
@@ -471,3 +471,4 @@ namespace fd::refl
     ///** @brief 변수에서 타입정보를 획득합니다. main 함수 진입이후에 호출이 유효함. 예외를 발생하지 않음 */
     //IType const* GetType(std::string_view, std::nothrow_t) noexcept;
 }
+#endif
