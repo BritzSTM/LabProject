@@ -30,8 +30,6 @@ namespace fd::refl
     template<typename _Ty, typename _CompilerTag = CurrCompilerTag>
     struct base_type_name_traits
     {
-        static_assert(false, "Unknown compiler tag.");
-
         static constexpr std::string_view rawName{ nullptr };
         static constexpr std::string_view fixedPrefix{ nullptr };
         static constexpr std::string_view fixedSubfix{ nullptr };
