@@ -130,7 +130,7 @@ namespace fd
         template<typename _Res, typename... _Args>
         struct function_args_traits<_Res(_Args...)>
         {
-            static constexpr std::size_t arg_count = sizeof...(_Args);
+            static constexpr std::size_t args_count = sizeof...(_Args);
 
             template <std::size_t _argIndex>
             struct argument_traits
