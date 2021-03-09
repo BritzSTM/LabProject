@@ -183,7 +183,7 @@ namespace fd::refl
             }
             else
             {
-                ETypeCLASS::Unknown;
+                return ETypeCLASS::Unknown;
             }
 
             return ETypeCLASS::Unknown;
