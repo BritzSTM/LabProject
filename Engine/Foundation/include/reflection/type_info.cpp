@@ -255,7 +255,7 @@ namespace fd::refl
     {
         int* ab[10][10];
         constexpr auto b{ GetDeclStack<decltype(ab)>() };
-        type_name_traits<STypeMeta>::
+        //type_name_traits<STypeMeta>::
         
         CType<EMetaType::Compiler, STypeMeta, SEmptyExtendMeta> t;
     }

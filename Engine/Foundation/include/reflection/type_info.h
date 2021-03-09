@@ -21,6 +21,8 @@ namespace fd::refl
     {
         ETypeQualifier qualifier;
         ETypeCLASS typeCLASS;
+
+        SDeclType(ETypeQualifier, ETypeCLASS) {}
     };
 
     namespace _internal_type_info
@@ -28,7 +30,9 @@ namespace fd::refl
         template<typename _Ty, size_t... _ns>
         constexpr auto GetDeclTypesImpl(std::index_sequence<_ns...> seq) noexcept
         {
-            const std::array<SDeclType, seq.size()> decls{ {{ GetTypeQualifier<seed_traits<_Ty>::level_t<_ns>>(), GetTypeCLASS<seed_traits<_Ty>::level_t<_ns>>() }...} };
+            //const std::array<SDeclType, seq.size()> decls{ {{ GetTypeQualifier<seed_traits<_Ty>::level_t<_ns>>(), GetTypeCLASS<seed_traits<_Ty>::level_t<_ns>>() }...} };
+            const std::array<SDeclType, 2> decls{ { SDeclType(ETypeQualifier::None, ETypeCLASS::Array),
+                SDeclType(ETypeQualifier::None, ETypeCLASS::Array) } };
 
             return decls;
         }
@@ -310,8 +314,8 @@ namespace fd::refl
             struct Supported {};
             struct NotSupoorted {};
 
-            template<typename _Ty>
-            static Supported checkSupport(typename std::decay_t<typename _Ty::CExporter_Gen>*);
+            template<typename _InTy>
+            static Supported checkSupport(typename std::decay_t<typename _InTy::CExporter_Gen>*);
 
             template<typename>
             static NotSupoorted checkSupport(...);

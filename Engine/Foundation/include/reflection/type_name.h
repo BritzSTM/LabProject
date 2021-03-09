@@ -30,9 +30,9 @@ namespace fd::refl
     template<typename _Ty, typename _CompilerTag = CurrCompilerTag>
     struct base_type_name_traits
     {
-        static constexpr std::string_view rawName{ nullptr };
-        static constexpr std::string_view fixedPrefix{ nullptr };
-        static constexpr std::string_view fixedSubfix{ nullptr };
+        static constexpr std::string_view rawName{ "ERR_SIMBOL" };
+        static constexpr std::string_view fixedPrefix{ "" };
+        static constexpr std::string_view fixedSubfix{ "" };
 
         static constexpr size_t kDynamicPrefixLen{ 0 }; /**< 고정길이 접두사 이후 동적인 접두사의 길이 */
     };
@@ -194,6 +194,7 @@ namespace fd::refl
             /** 해당유형의 전체이름과 비교합니다. 컴파일 타임 비교시 이 함수를 이용할 것. */
             inline static constexpr bool CompareFullTypeName(std::string_view name) noexcept
             {
+                using FullTypeNameStorage<_Ty>::fullTypeName;
                 return CompareName(fullTypeName, name);
             }
 

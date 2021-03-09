@@ -9,8 +9,8 @@ set(LIB_PATCH_VERSION "5")
 set(LIB_VERSION_STRING "${LIB_MAJOR_VERSION}.${LIB_MINOR_VERSION}.${LIB_PATCH_VERSION}")
 
 # Minimal Lang version
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 project(Foundation VERSION ${LIB_VERSION_STRING})
@@ -32,7 +32,8 @@ set(FD_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 # ! 하위 폴더들은 자동 생성파일이 아니라면 GLOB을 통한 파일 등록을 하지 말 것.
 #   대신 target_sources로 등록할 것
 add_library(${PROJECT_NAME} STATIC "")
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+
 find_package(Microsoft.GSL CONFIG REQUIRED)
 target_link_libraries(Foundation PRIVATE Microsoft.GSL::GSL)
 
