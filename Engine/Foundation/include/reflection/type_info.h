@@ -313,20 +313,20 @@ namespace fd::refl
             template<typename _Ty>
             static Supported checkSupport(typename std::decay_t<typename _Ty::CExporter_Gen>*);
 
-            template<typename _Ty>
+            template<typename>
             static NotSupoorted checkSupport(...);
 
         public:
             static constexpr bool IsSupport{ std::is_same_v<decltype(checkSupport<_Ty>(nullptr)), Supported> };
             // ->span<const SFieldType>
-            template<bool _support = IsSupport>
-            static auto ExportFields() noexcept
-            {
-                if constexpr (_support)
-                    return ExporterType::ExportFields();
+            //template<bool _support = IsSupport>
+            //static auto ExportFields() noexcept
+            //{
+            //    if constexpr (_support)
+            //        return ExporterType::ExportFields();
 
-                return {};
-            }
+            //    return {};
+            //}
         };
     }
 
